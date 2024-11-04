@@ -83,4 +83,6 @@ sail artisan queue:work
 For more info read:
 > https://laravel.com/docs/11.x/sail#executing-sail-commands
 
-# web-project-group10
+# ER Diagram
+
+![Er Diagram](./database/er_diagram.webp)
