@@ -26,11 +26,24 @@ use Illuminate\Support\Carbon;
 class Animal extends Model
 {
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'animals';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
 
     /**
      * @var array
      */
+
     protected $fillable = [
         'name',
         'size',

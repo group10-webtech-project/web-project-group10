@@ -21,7 +21,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class GameSessions extends Model
 {
-    //
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'game_sessions';
 
     /**
