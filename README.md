@@ -9,7 +9,7 @@ composer require laravel/sail --dev
 
 ## Copy the environment
 ```shell
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 ## Then configure a shell `alias`
@@ -46,6 +46,9 @@ sail up -d
 Once the application's containers have been started, you may access the project in your web browser at: http://localhost.
 
 ```shell
+# Generate the encryption key:
+sail artisan key:generate
+
 # Run "artisan migrate" to run database migrations:  
 sail artisan migrate
 ```
@@ -56,6 +59,7 @@ then
 - in order to use `interia` and `vue.js`
 ```shell
 ./vendor/bin/sail composer require laravel/breeze --dev
+
 
 sail artisan migrate
 npm install
