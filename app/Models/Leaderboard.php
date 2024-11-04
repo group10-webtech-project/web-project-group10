@@ -22,8 +22,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Leaderboard extends Model
 {
-    //
-    protected $table = 'leaderboards';
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'leaderboard';
 
     /**
      * @var array

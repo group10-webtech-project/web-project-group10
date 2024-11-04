@@ -17,6 +17,11 @@ use Illuminate\Support\Carbon;
  */
 class Categories extends Model
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'categories';
 
     /**
