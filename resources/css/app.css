@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.game-container {
+    background: linear-gradient(135deg, hsl(var(--b2)), hsl(var(--b3)));
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+    border-radius: 2rem;
+}

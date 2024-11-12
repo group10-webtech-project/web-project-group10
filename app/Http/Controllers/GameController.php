@@ -182,6 +182,13 @@ class GameController extends Controller
             $this->startNewGame();
         }
 
+        if (session('points', 0) <= 0 && !session('gameOver', false)) {
+            session([
+                'gameOver' => true,
+                'won' => false
+            ]);
+        }
+
         return view('game', [
             'wordLength' => strlen(session('animal')),
             'guesses' => session('guesses', []),
@@ -215,7 +222,7 @@ class GameController extends Controller
         ];
 
         $won = $guess === $animal;
-        $gameOver = $won || count($guesses) >= $maxAttempts;
+        $gameOver = $won || count($guesses) >= $maxAttempts || ($points - $this->wrongGuessDeduction) <= 0;
 
         if ($won) {
             $points += $this->correctGuessPoints;
@@ -226,11 +233,14 @@ class GameController extends Controller
             $this->revealLetter();
         }
 
+        $points = max(0, $points);  // Prevent negative points
+        $gameOver = $gameOver || $points <= 0;  // Game over if no points left
+
         session([
             'guesses' => $guesses,
             'gameOver' => $gameOver,
             'won' => $won,
-            'points' => max(0, $points)  // Prevent negative points
+            'points' => $points
         ]);
 
         return back();
@@ -333,16 +343,30 @@ class GameController extends Controller
             ]);
         }
 
+        $result = $this->animalCharacteristics[$animal][$characteristic] ?? false;
+        $newPoints = $points - $this->characteristicCost;
+        $gameOver = $newPoints <= 0;
+
+        // Format the characteristic name for display
+        $formattedCharacteristic = ucwords(str_replace('_', ' ', $characteristic));
+
+        // Add transaction record with formatted result
         $this->addTransaction(
-            "Checked characteristic: " . str_replace('_', ' ', $characteristic),
+            $formattedCharacteristic . ": " . ($result ? "Yes" : "No"),
             -$this->characteristicCost
         );
 
-        session(['points' => $points - $this->characteristicCost]);
+        session([
+            'points' => $newPoints,
+            'gameOver' => $gameOver,
+            'won' => false
+        ]);
 
         return response()->json([
-            'result' => $this->animalCharacteristics[$animal][$characteristic] ?? false,
-            'points' => $points - $this->characteristicCost
+            'result' => $result,
+            'points' => $newPoints,
+            'gameOver' => $gameOver,
+            'transactions' => session('transactions', [])
         ]);
     }
 
@@ -368,5 +392,22 @@ class GameController extends Controller
             'timestamp' => now()->format('Y-m-d H:i:s')
         ];
         session(['transactions' => $transactions]);
+    }
+
+    public function revealAnswer()
+    {
+        $animal = session('animal');
+        $points = session('points', 0);
+
+        // Deduct all remaining points as penalty
+        $this->addTransaction("Revealed answer: $animal", -$points);
+
+        session([
+            'gameOver' => true,
+            'won' => false,
+            'points' => 0
+        ]);
+
+        return back();
     }
 }
