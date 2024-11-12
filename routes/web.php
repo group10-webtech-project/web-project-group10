@@ -12,3 +12,4 @@ Route::post('/game/guess', [GameController::class, 'guess'])->name('game.guess')
 Route::post('/game/hint', [GameController::class, 'buyHint'])->name('game.hint');
 Route::post('/game/new', [GameController::class, 'newGame'])->name('game.new');
 Route::post('/game/check', [GameController::class, 'checkCharacteristic'])->name('game.check');
+Route::post('/game/reveal', [GameController::class, 'revealAnswer'])->name('game.reveal');
