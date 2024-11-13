@@ -14,7 +14,13 @@
 * Is Carnivore
 
 
-- TODO: The word input should be in small boxes instead of just input like wordle
-- TODO: Check the scoring system 
-- TODO: Transaction list bug. 
-- TODO: Dark and Light theme
+13.11.2024
+
+- Done: The word input should be in small boxes instead of just input like wordle
+- Done: Check the scoring system 
+- Done: Transaction list bug. 
+- Done: Dark and Light theme
+- Done: Better styling
+- Done: Try hard wordle UX
+- Done: Added Icon
+- Done: Added Favicon
