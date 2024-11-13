@@ -16,6 +16,11 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
         $credentials = $request ->only('email','password');
 
         if (Auth::attempt($credentials)) 
@@ -23,7 +28,7 @@ class LoginController extends Controller
             return redirect()->intended('/dashboard');
         }
 
-        return back()->withErrors(['email' => 'Invalid login attempt.']);
+        return back()->with(['error' => 'Incorrect email or password.']);
     }
 
     public function dashboard()
