@@ -6,14 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nerdle</title>
     <link rel="icon" href="{{ asset('icon.svg') }}" type="image/svg+xml">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header Section -->
-        <div class="game-container p-8 mb-8">
-            <div class="flex justify-between items-center mb-8">
+
+
                 <div class="flex items-center gap-4">
                     <img src="{{ asset('icon.svg') }}" alt="Game Icon" class="w-24 h-24">
                     <h1 class="text-5xl font-bold text-primary">Nerdle</h1>
@@ -39,6 +33,12 @@
                         </button>
                     </form>
                 </div>
+                <form action="{{ route('game.new') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="btn btn-success btn-lg hover:scale-105 transition-transform duration-200">
+                        🎲 New Game
+                    </button>
+                </form>
             </div>
 
             <!-- Game Info -->
@@ -210,6 +210,7 @@
                         </button>
                     </form>
                 </div>
+
             @endif
         </div>
     </div>
@@ -235,6 +236,7 @@
                 } else {
                     document.querySelector('.badge-primary').textContent = `✨ Points: ${data.points}`;
 
+
                     // Refresh the entire transaction list
                     const transactionList = document.getElementById('transaction-list');
                     transactionList.innerHTML = data.transactions.reverse().map(transaction => `
@@ -249,6 +251,7 @@
 
                 if (data.gameOver) {
                     location.reload();
+
                 }
             });
         }
@@ -482,6 +485,7 @@
             html.setAttribute('data-theme', savedTheme);
             if (savedTheme === 'dark') {
                 themeToggle.classList.add('swap-active');
+
             }
         });
     </script>
@@ -520,7 +524,7 @@
             backdrop-filter: blur(2px);
             transition: all 0.3s ease;
         }
-
+        
         /* Add these styles for the input boxes */
         .input {
             transition: all 0.3s ease;
@@ -610,6 +614,7 @@
             background-color: hsl(var(--b1));
             color: hsl(var(--bc));
         }
+
     </style>
 </body>
 </html>

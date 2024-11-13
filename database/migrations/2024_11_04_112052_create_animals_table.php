@@ -19,6 +19,11 @@ return new class extends Migration
             $table->string('diet');
             $table->string('region');
             $table->string('lifespan');
+            $table->boolean('has_legs');
+            $table->boolean('has_fur');
+            $table->boolean('can_swim');
+            $table->boolean('can_fly');
+            $table->boolean('is_carnivore');
             $table->foreignId('category_id')
                 ->constrained('categories')
                 ->onDelete('cascade')

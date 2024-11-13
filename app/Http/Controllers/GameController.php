@@ -233,7 +233,9 @@ class GameController extends Controller
         ];
 
         $won = $guess === $animal;
+
         $gameOver = $won || count($guesses) >= $this->maxGuesses;
+
 
         if ($won) {
             $points += $this->correctGuessPoints;
@@ -242,8 +244,10 @@ class GameController extends Controller
             $points -= $this->wrongGuessDeduction;
         }
 
+
         $points = max(0, $points);
         $gameOver = $gameOver || $points <= 0;
+
 
         session([
             'guesses' => $guesses,
@@ -414,6 +418,7 @@ class GameController extends Controller
         $formattedCharacteristic = ucwords(str_replace('_', ' ', $characteristic));
         $this->addTransaction(
             "Checked characteristic: " . $formattedCharacteristic . " - " . ($result ? "Yes" : "No"),
+
             -$this->characteristicCost
         );
 
@@ -466,4 +471,5 @@ class GameController extends Controller
         session(['points' => $newPoints]);
         return $newPoints;
     }
+
 }

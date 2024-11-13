@@ -9,6 +9,7 @@ Route::middleware('web')->group(function () {
     Route::post('/game/new', [GameController::class, 'newGame'])->name('game.new');
     Route::post('/set-theme', [GameController::class, 'setTheme'])->name('game.setTheme');
 
+
     // Rate-limited routes
     Route::middleware('throttle:30,1')->group(function () {
         Route::post('/game/guess', [GameController::class, 'guess'])->name('game.guess');
@@ -18,3 +19,4 @@ Route::middleware('web')->group(function () {
         Route::post('/game/give-up', [GameController::class, 'giveUp'])->name('game.giveUp');
     });
 });
+

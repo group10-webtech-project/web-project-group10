@@ -17,6 +17,10 @@ use Illuminate\Support\Carbon;
  * @property string $diet
  * @property string $region
  * @property string $lifespan
+ * @property string $has_legs
+ * @property string $has_fur
+ * @property string $can_swim
+ * @property string $can_fly
  * @property int $category_id
  * @property string|null $description
  * @property string|null $image_url
@@ -51,6 +55,10 @@ class Animal extends Model
         'diet',
         'region',
         'lifespan',
+        'has_legs',
+        'has_fur',
+        'can_swim',
+        'can_fly',
         'category_id',
         'description',
         'image_url',
