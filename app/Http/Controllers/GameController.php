@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 class GameController extends Controller
 {
     private $animals = [
@@ -27,11 +29,12 @@ class GameController extends Controller
         'RACCOON' => 'Masked nocturnal mammal'
     ];
 
-    private $hintCost = 200;
+    private $maxGuesses = 5;
+    private $hintCost = 150;
     private $characteristicCost = 100;
-    private $correctGuessPoints = 500;
-    private $wrongGuessDeduction = 50;
-    private $startingPoints = 1000;
+    private $correctGuessPoints = 1000;
+    private $wrongGuessDeduction = 100;
+    private $startingPoints = 500;
 
     private $animalCharacteristics = [
         'LION' => [
@@ -199,16 +202,24 @@ class GameController extends Controller
             'initialHint' => session('initialHint'),
             'hintCost' => $this->hintCost,
             'characteristicCost' => $this->characteristicCost,
-            'maxAttempts' => strlen(session('animal'))
+            'maxAttempts' => strlen(session('animal')),
+            'theme' => session('theme', 'fantasy')
         ]);
     }
 
-    public function guess()
+    public function guess(Request $request)
     {
+        $request->validate([
+            'guess' => 'required|string|alpha|max:10'
+        ]);
+
+        if (session('gameOver')) {
+            return response()->json(['error' => 'Game is already over'], 400);
+        }
+
         $guess = strtoupper(request('guess'));
         $animal = session('animal');
         $guesses = session('guesses', []);
-        $maxAttempts = strlen($animal);
         $points = session('points', $this->startingPoints);
 
         if (strlen($guess) !== strlen($animal)) {
@@ -222,19 +233,21 @@ class GameController extends Controller
         ];
 
         $won = $guess === $animal;
-        $gameOver = $won || count($guesses) >= $maxAttempts || ($points - $this->wrongGuessDeduction) <= 0;
+
+        $gameOver = $won || count($guesses) >= $this->maxGuesses;
+
 
         if ($won) {
             $points += $this->correctGuessPoints;
-            $this->addTransaction("Correct guess: $animal", $this->correctGuessPoints);
+            $this->addTransaction("🎉 Correctly guessed the animal: $animal!", $this->correctGuessPoints);
         } else {
             $points -= $this->wrongGuessDeduction;
-            $this->addTransaction("Wrong guess: $guess", -$this->wrongGuessDeduction);
-            $this->revealLetter();
         }
 
-        $points = max(0, $points);  // Prevent negative points
-        $gameOver = $gameOver || $points <= 0;  // Game over if no points left
+
+        $points = max(0, $points);
+        $gameOver = $gameOver || $points <= 0;
+
 
         session([
             'guesses' => $guesses,
@@ -243,7 +256,12 @@ class GameController extends Controller
             'points' => $points
         ]);
 
-        return back();
+        // Instead of redirecting, return JSON response
+        return response()->json([
+            'success' => true,
+            'gameOver' => $gameOver ?? false,
+            'message' => $message ?? '',
+        ]);
     }
 
     public function buyHint()
@@ -265,40 +283,56 @@ class GameController extends Controller
         $newHintPosition = array_rand($availablePositions);
         $hints[] = $newHintPosition;
 
-        // Add transaction record
         $this->addTransaction(
-            "Bought letter hint: " . $animal[$newHintPosition],
+            "Purchased hint: Letter '" . $animal[$newHintPosition] . "' at position " . ($newHintPosition + 1),
             -$this->hintCost
         );
 
         session([
             'points' => $points - $this->hintCost,
-            'hints' => $hints
+            'hints' => $hints,
+            'currentHint' => [
+                'position' => $newHintPosition,
+                'letter' => $animal[$newHintPosition]
+            ]
         ]);
 
-        return back()->with('success', "Revealed letter '" . $animal[$newHintPosition] . "'!");
+        return response()->json([
+            'success' => true,
+            'position' => $newHintPosition,
+            'letter' => $animal[$newHintPosition],
+            'points' => $points - $this->hintCost
+        ]);
     }
 
-    public function newGame()
+    public function newGame(Request $request)
     {
+        $currentTheme = session('theme', 'fantasy');
         $this->startNewGame();
+        session(['theme' => $currentTheme]);
         return redirect()->route('game.index');
     }
 
     private function startNewGame()
     {
+        // Clear all game-related session data
+        session()->forget([
+            'animal',
+            'guesses',
+            'hints',
+            'gameOver',
+            'won',
+            'characteristicChecks',
+            'transactions'
+        ]);
+
         $animalKey = array_rand($this->animals);
-        $startingPoints = strlen($animalKey) * 200; // 200 points per letter
 
         session([
             'animal' => $animalKey,
             'initialHint' => $this->animals[$animalKey],
-            'guesses' => [],
-            'gameOver' => false,
-            'won' => false,
-            'points' => $startingPoints,
-            'hints' => [],
-            'revealedLetters' => [],
+            'points' => $this->startingPoints,
+            'characteristicChecks' => 0,
             'transactions' => []
         ]);
     }
@@ -307,31 +341,64 @@ class GameController extends Controller
     {
         $result = [];
         $answerArray = str_split($answer);
+        $guessArray = str_split($guess);
 
+        // First pass: mark exact matches
         for ($i = 0; $i < strlen($guess); $i++) {
-            if ($guess[$i] === $answer[$i]) {
+            if ($guessArray[$i] === $answerArray[$i]) {
                 $result[$i] = 'correct';
-                $answerArray[$i] = null;
+                $answerArray[$i] = null;  // Mark as used
+                $guessArray[$i] = null;   // Mark as used
             } else {
                 $result[$i] = 'wrong';
             }
         }
 
+        // Second pass: mark present letters
         for ($i = 0; $i < strlen($guess); $i++) {
-            if ($result[$i] !== 'correct') {
-                $pos = array_search($guess[$i], $answerArray);
+            if ($guessArray[$i] !== null) {  // If not already matched
+                $pos = array_search($guessArray[$i], $answerArray);
                 if ($pos !== false) {
                     $result[$i] = 'present';
-                    $answerArray[$pos] = null;
+                    $answerArray[$pos] = null;  // Mark as used
                 }
             }
         }
+
+        // Add a more descriptive transaction message
+        $correctCount = count(array_filter($result, fn($r) => $r === 'correct'));
+        $presentCount = count(array_filter($result, fn($r) => $r === 'present'));
+
+        $message = "Guess: $guess - ";
+        if ($correctCount > 0) {
+            $message .= "$correctCount letter" . ($correctCount > 1 ? 's' : '') . " in correct position";
+            if ($presentCount > 0) {
+                $message .= " and ";
+            }
+        }
+        if ($presentCount > 0) {
+            $message .= "$presentCount letter" . ($presentCount > 1 ? 's' : '') . " present but misplaced";
+        }
+        if ($correctCount === 0 && $presentCount === 0) {
+            $message .= "No correct letters";
+        }
+
+        $this->addTransaction($message, -$this->wrongGuessDeduction);
 
         return $result;
     }
 
     public function checkCharacteristic()
     {
+        if (session('characteristicChecks', 0) > 20) {
+            return response()->json([
+                'error' => 'Maximum characteristic checks reached!',
+                'points' => session('points')
+            ]);
+        }
+
+        session(['characteristicChecks' => session('characteristicChecks', 0) + 1]);
+
         $characteristic = request('characteristic');
         $animal = session('animal');
         $points = session('points', $this->startingPoints);
@@ -347,12 +414,11 @@ class GameController extends Controller
         $newPoints = $points - $this->characteristicCost;
         $gameOver = $newPoints <= 0;
 
-        // Format the characteristic name for display
+        // More descriptive characteristic message
         $formattedCharacteristic = ucwords(str_replace('_', ' ', $characteristic));
-
-        // Add transaction record with formatted result
         $this->addTransaction(
-            $formattedCharacteristic . ": " . ($result ? "Yes" : "No"),
+            "Checked characteristic: " . $formattedCharacteristic . " - " . ($result ? "Yes" : "No"),
+
             -$this->characteristicCost
         );
 
@@ -368,19 +434,6 @@ class GameController extends Controller
             'gameOver' => $gameOver,
             'transactions' => session('transactions', [])
         ]);
-    }
-
-    private function revealLetter()
-    {
-        $animal = session('animal');
-        $revealedLetters = session('revealedLetters', []);
-        $availablePositions = array_diff(range(0, strlen($animal) - 1), $revealedLetters);
-
-        if (!empty($availablePositions)) {
-            $newPosition = array_rand($availablePositions);
-            $revealedLetters[] = $newPosition;
-            session(['revealedLetters' => $revealedLetters]);
-        }
     }
 
     private function addTransaction($action, $points)
@@ -410,4 +463,13 @@ class GameController extends Controller
 
         return back();
     }
+
+    private function deductPoints($amount)
+    {
+        $points = session('points', 0);
+        $newPoints = max(0, $points - $amount);
+        session(['points' => $newPoints]);
+        return $newPoints;
+    }
+
 }

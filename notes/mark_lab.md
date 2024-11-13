@@ -13,4 +13,14 @@
 * Can Fly
 * Is Carnivore
 
-Extra ideas: buying points and letters, but I am not sure about the how we could calculate good scoring system. Time, word length and guesses?
+
+13.11.2024
+
+- Done: The word input should be in small boxes instead of just input like wordle
+- Done: Check the scoring system 
+- Done: Transaction list bug. 
+- Done: Dark and Light theme
+- Done: Better styling
+- Done: Try hard wordle UX
+- Done: Added Icon
+- Done: Added Favicon
