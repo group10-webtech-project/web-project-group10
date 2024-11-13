@@ -13,4 +13,8 @@
 * Can Fly
 * Is Carnivore
 
-Extra ideas: buying points and letters, but I am not sure about the how we could calculate good scoring system. Time, word length and guesses?
+
+- TODO: The word input should be in small boxes instead of just input like wordle
+- TODO: Check the scoring system 
+- TODO: Transaction list bug. 
+- TODO: Dark and Light theme
