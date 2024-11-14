@@ -56,3 +56,4 @@ Route::middleware('web')->group(function () {
     Route::get('/dashboard', [LoginController::class, 'dashboard'])->middleware('auth');
     Route::get('/logout', [LoginController::class, 'logout']);
 });
+
