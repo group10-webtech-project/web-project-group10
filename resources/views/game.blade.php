@@ -39,6 +39,11 @@
                             🎲 New Game
                         </button>
                     </form>
+                    <form action="{{ route('catalogue') }}" method="GET">
+                        <button type="submit" class="btn btn-success btn-lg hover:scale-105 transition-transform duration-200">
+                            📖 Catalogue
+                        </button>
+                    </form>
                 </div>
             </div>
 
