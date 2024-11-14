@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ session('theme', 'fantasy') }}">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,80 +9,83 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10">
-    <div class="container mx-auto px-4 py-8">
+<body class="min-h-screen bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
+    <div class="container mx-auto px-4 py-4 sm:py-8">
         <!-- Header Section -->
-        <div class="game-container p-8 mb-8">
-            <div class="flex justify-between items-center mb-8">
-
-                <div class="flex items-center gap-4">
-                    <img src="{{ asset('icon.svg') }}" alt="Game Icon" class="w-24 h-24">
-                    <h1 class="text-5xl font-bold text-primary">Nerdle</h1>
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body p-4 sm:p-8">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <img src="{{ asset('icon.svg') }}" alt="Game Icon" class="w-16 h-16 sm:w-24 sm:h-24">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-primary">Nerdle</h1>
+                    </div>
+                    <div class="flex flex-wrap justify-center items-center gap-2 sm:gap-4">
+                        <div class="badge badge-primary badge-lg text-lg sm:text-2xl p-4">
+                            ✨ Points: {{ session('points', 500) }}
+                        </div>
+                        <button onclick="toggleTheme()" class="btn btn-circle btn-ghost swap swap-rotate" id="theme-toggle">
+                            <!-- sun icon -->
+                            <svg class="swap-on fill-current w-6 h-6 sm:w-8 sm:h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+                            </svg>
+                            <!-- moon icon -->
+                            <svg class="swap-off fill-current w-6 h-6 sm:w-8 sm:h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
+                            </svg>
+                        </button>
+                        <form action="{{ route('game.new') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success gap-2 hover:scale-105 transition-transform duration-200">
+                                <span class="hidden sm:inline">New Game</span>
+                                <span class="sm:hidden">New</span>
+                                🎲
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="badge badge-primary badge-lg text-2xl p-4">
-                        ✨ Points: {{ session('points', 500) }}
-                    </span>
-                    <button onclick="toggleTheme()" class="btn btn-circle btn-ghost swap swap-rotate" id="theme-toggle">
-                        <!-- sun icon -->
-                        <svg class="swap-on fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
-                        </svg>
-                        <!-- moon icon -->
-                        <svg class="swap-off fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
-                        </svg>
-                    </button>
-                    <form action="{{ route('game.new') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-success btn-lg hover:scale-105 transition-transform duration-200">
-                            🎲 New Game
-                        </button>
-                    </form>
-                    <form action="{{ route('catalogue') }}" method="GET">
-                        <button type="submit" class="btn btn-success btn-lg hover:scale-105 transition-transform duration-200">
-                            📖 Catalogue
-                        </button>
-                    </form>
+
+                <!-- Game Info -->
+                <div class="alert alert-info mt-4 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <h3 class="font-bold">{{ session('initialHint') }}</h3>
+                        <div class="text-sm">Remaining Guesses: {{ 5 - count($guesses) }}</div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Game Info -->
-            <div class="alert alert-info mb-6 shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <div>
-                    <h3 class="font-bold">{{ session('initialHint') }}</h3>
-                    <div class="text-sm">Remaining Guesses: {{ 5 - count($guesses) }}</div>
-                </div>
-            </div>
-
-            <!-- Main Game Grid -->
-            <div class="mb-6">
+        <!-- Main Game Grid -->
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body p-4 sm:p-8">
                 <!-- Previous Guesses -->
                 @foreach($guesses as $guess)
-                    <div class="flex justify-center gap-2 mb-2">
+                    <div class="flex justify-center gap-1 sm:gap-2 mb-2">
                         @foreach(str_split($guess['word']) as $index => $letter)
-                            <div class="w-16 h-16 flex items-center justify-center text-3xl font-bold rounded-lg flip-card
-                                {{ $guess['result'][$index] === 'correct' ? 'bg-success text-success-content' :
-                                   ($guess['result'][$index] === 'present' ? 'bg-warning text-warning-content' : 'bg-neutral text-neutral-content') }}"
-                                style="animation-delay: {{ $index * 0.2 }}s">
+                            <div @class([
+                                'w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl font-bold rounded-lg flip-card',
+                                'bg-success text-success-content' => $guess['result'][$index] === 'correct',
+                                'bg-warning text-warning-content' => $guess['result'][$index] === 'present',
+                                'bg-neutral text-neutral-content' => $guess['result'][$index] === 'wrong'
+                            ])
+                            style="animation-delay: {{ $index * 0.2 }}s">
                                 {{ $letter }}
                             </div>
                         @endforeach
                     </div>
                 @endforeach
 
-                <!-- Current Input Row (if game not over) -->
+                <!-- Current Input Row -->
                 @if(!$gameOver && count($guesses) < 5)
                     <form action="{{ route('game.guess') }}" method="POST" class="mb-2">
                         @csrf
-                        <div class="flex justify-center gap-2 bg-base-200 rounded-lg p-2">
+                        <div class="flex justify-center gap-1 sm:gap-2 bg-base-200 rounded-lg p-2">
                             @for($i = 0; $i < $wordLength; $i++)
                                 <input type="text"
                                        maxlength="1"
-                                       class="w-16 h-16 text-center text-3xl font-bold uppercase input input-bordered focus:input-primary rounded-lg"
+                                       class="w-12 h-12 sm:w-16 sm:h-16 text-center text-2xl sm:text-3xl font-bold uppercase input input-bordered focus:input-primary rounded-lg"
                                        data-position="{{ $i }}"
                                        required
                                        pattern="[A-Za-z]"
@@ -97,129 +100,265 @@
 
                 <!-- Remaining Empty Rows -->
                 @for($i = count($guesses) + ($gameOver ? 0 : 1); $i < 5; $i++)
-                    <div class="flex justify-center gap-2 mb-2">
-                        @for($j = 0; $j < strlen(session('animal')); $j++)
-                            <div class="w-16 h-16 flex items-center justify-center text-3xl font-bold rounded-lg bg-base-200 opacity-30">
+                    <div class="flex justify-center gap-1 sm:gap-2 mb-2">
+                        @for($j = 0; $j < $wordLength; $j++)
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl font-bold rounded-lg bg-base-200 opacity-30">
                                 ?
                             </div>
                         @endfor
                     </div>
                 @endfor
 
-                <!-- Add the guess button after all guess rows -->
+                <!-- Guess Button -->
                 @if(!$gameOver && count($guesses) < 5)
-                    <div class="flex justify-center mt-4 mb-8">
+                    <div class="flex justify-center mt-4">
                         <button onclick="submitGuess()"
                                 class="btn btn-primary btn-lg gap-2 hover:scale-105 transition-transform duration-200">
                             <span>Make Guess</span>
-                            <kbd class="kbd kbd-sm">↵</kbd>
+                            <kbd class="kbd kbd-sm"></kbd>
                         </button>
                     </div>
                 @endif
             </div>
+        </div>
 
-            <!-- Game Controls -->
-            @if(!$gameOver)
-                <div class="mb-8">
-                    <div class="card bg-base-200 shadow-xl">
-                        <div class="card-body">
-                            <h2 class="card-title text-2xl font-bold text-secondary mb-4">
-                                🏪 Hint Store
-                            </h2>
-                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                <form action="{{ route('game.hint') }}" method="POST" class="contents" id="hintForm">
-                                    @csrf
-                                    <button type="button"
-                                            onclick="buyHint()"
-                                            class="btn btn-secondary hover:scale-105 transition-transform duration-200 shadow-lg {{ session('points', 1000) < $hintCost ? 'btn-disabled' : '' }}"
-                                            {{ session('points', 1000) < $hintCost ? 'disabled' : '' }}>
-                                        <div class="flex flex-col items-center">
-                                            <span class="text-2xl">💰</span>
-                                            <span>Buy Letter</span>
-                                            <span class="badge badge-sm mt-1">{{ $hintCost }} points</span>
-                                        </div>
-                                    </button>
-                                </form>
+        <!-- Game Controls -->
+        @if(!$gameOver)
+            <div class="card bg-base-100 shadow-xl mb-8">
+                <div class="card-body p-4 sm:p-8">
+                    <h2 class="card-title text-xl sm:text-2xl font-bold text-secondary mb-4">
+                        🏪 Hint Store
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+                        <form action="{{ route('game.hint') }}" method="POST" class="contents" id="hintForm">
+                            @csrf
+                            <button type="button"
+                                    onclick="buyHint()"
+                                    class="btn btn-secondary hover:scale-105 transition-transform duration-200 shadow-lg {{ session('points', 1000) < $hintCost ? 'btn-disabled' : '' }}"
+                                    {{ session('points', 1000) < $hintCost ? 'disabled' : '' }}>
+                                <div class="flex flex-col items-center">
+                                    <span class="text-xl sm:text-2xl">💰</span>
+                                    <span class="text-xs sm:text-sm">Buy Letter</span>
+                                    <span class="badge badge-sm mt-1">{{ $hintCost }}</span>
+                                </div>
+                            </button>
+                        </form>
 
-                                @foreach([
-                                    ['has_legs', '🦿', 'Has Legs?'],
-                                    ['has_fur', '🦊', 'Has Fur?'],
-                                    ['can_swim', '🏊‍♂️', 'Can Swim?'],
-                                    ['can_fly', '🦅', 'Can Fly?'],
-                                    ['is_carnivore', '🥩', 'Is Carnivore?']
-                                ] as [$characteristic, $emoji, $label])
-                                    <button onclick="checkCharacteristic('{{ $characteristic }}')"
-                                            class="btn btn-primary hover:scale-105 transition-transform duration-200 shadow-lg">
-                                        <div class="flex flex-col items-center">
-                                            <span class="text-2xl">{{ $emoji }}</span>
-                                            <span>{{ $label }}</span>
-                                            <span class="badge badge-sm mt-1">{{ $characteristicCost }} points</span>
-                                        </div>
-                                    </button>
-                                @endforeach
-                            </div>
-                            <div id="characteristic-result" class="mt-4 text-lg font-bold animate-pulse"></div>
-                        </div>
+                        @foreach([
+                            ['has_legs', '🦿', 'Has Legs?'],
+                            ['has_fur', '🦊', 'Has Fur?'],
+                            ['can_swim', '🏊‍♂️', 'Can Swim?'],
+                            ['can_fly', '🦅', 'Can Fly?'],
+                            ['is_carnivore', '🥩', 'Is Carnivore?']
+                        ] as [$characteristic, $emoji, $label])
+                            <button onclick="checkCharacteristic('{{ $characteristic }}')"
+                                    class="btn btn-primary hover:scale-105 transition-transform duration-200 shadow-lg">
+                                <div class="flex flex-col items-center">
+                                    <span class="text-xl sm:text-2xl">{{ $emoji }}</span>
+                                    <span class="text-xs sm:text-sm">{{ $label }}</span>
+                                    <span class="badge badge-sm mt-1">{{ $characteristicCost }}</span>
+                                </div>
+                            </button>
+                        @endforeach
                     </div>
+                    <div id="characteristic-result" class="mt-4 text-lg font-bold animate-pulse"></div>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            <!-- Transaction History -->
-            <div class="mb-8" id="transaction-history">
-                <h3 class="text-lg font-bold mb-2">
+        <!-- Transaction History -->
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body p-4 sm:p-8">
+                <h3 class="card-title text-lg font-bold mb-2">
                     <span class="text-xl mr-2">💰</span>
-                    Transaction History:
+                    Transaction History
                 </h3>
-                <div class="card bg-base-100 shadow-xl">
-                    <div class="card-body" id="transaction-list">
-                        @foreach(session('transactions', []) as $index => $transaction)
-                            <div class="flex justify-between items-center border-b py-2 hover:bg-base-200">
-                                <span>{{ $transaction['action'] }}</span>
+                <div class="overflow-y-auto max-h-48">
+                    <div id="transaction-list" class="space-y-2">
+                        @foreach(session('transactions', []) as $transaction)
+                            <div class="flex justify-between items-center p-2 hover:bg-base-200 rounded-lg transition-colors">
+                                <span class="text-sm">{{ $transaction['action'] }}</span>
                                 <span class="font-mono {{ $transaction['points'] >= 0 ? 'text-success' : 'text-error' }}">
-                                    {{ $transaction['points'] >= 0 ? '+' : '' }}{{ $transaction['points'] }} points
+                                    {{ $transaction['points'] >= 0 ? '+' : '' }}{{ $transaction['points'] }}
                                 </span>
                             </div>
                         @endforeach
                     </div>
                 </div>
             </div>
-
-            <!-- Game Over Message -->
-            @if($gameOver)
-                <!-- Full screen overlay for game over -->
-                <div class="fixed inset-0 bg-black/50 z-40" id="game-over-overlay"></div>
-
-                <div class="text-center fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl">
-                    @if($won)
-                        <div class="alert alert-success shadow-lg" id="win-message">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <span class="text-2xl">Congratulations! You won!</span>
-                        </div>
-                    @else
-                        <div class="alert alert-error shadow-lg relative overflow-hidden" id="lose-message">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 relative z-10" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <span class="text-2xl relative z-10">
-                                Game Over!
-                                @if(session('points', 0) <= 0)
-                                    You ran out of points!
-                                @endif
-                                The animal was: {{ session('animal') }}
-                            </span>
-                        </div>
-                    @endif
-
-                    <!-- New Game button in game over screen -->
-                    <form action="{{ route('game.new') }}" method="POST" class="mt-4">
-                        @csrf
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            🎲 Play Again
-                        </button>
-                    </form>
-                </div>
-
-            @endif
         </div>
+
+        <!-- Game Over Modal -->
+        @if($gameOver)
+            <div class="fixed inset-0 bg-black/50 z-40" id="game-over-overlay"></div>
+            <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4">
+                @if($won)
+                    <div class="alert alert-success shadow-lg" id="win-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xl sm:text-2xl">Congratulations! You won!</span>
+                    </div>
+                @else
+                    <div class="alert alert-error shadow-lg" id="lose-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xl sm:text-2xl">
+                            Game Over! The animal was: {{ session('animal') }}
+                        </span>
+                    </div>
+                @endif
+
+                <form action="{{ route('game.new') }}" method="POST" class="mt-4 text-center">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-lg gap-2">
+                        🎲 Play Again
+                    </button>
+                </form>
+            </div>
+        @endif
+
+        <footer class="mt-16 text-center py-8 border-t border-base-300">
+            <p class="text-base-content/60">&copy; {{ date('Y') }} Nerdle. All rights reserved. (not really)</p>
+        </footer>
     </div>
+
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes rain {
+            0% {
+                transform: translateY(-100vh);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .rain-drop {
+            position: fixed; /* Changed from absolute to fixed */
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(transparent, #666);
+            animation: rain linear infinite;
+            z-index: 45; /* Between overlay and message */
+        }
+
+        #game-over-overlay {
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Add these styles for the input boxes */
+        .input {
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            width: 4rem !important; /* Force wider boxes */
+            height: 4rem !important;
+            font-size: 2rem !important;
+        }
+
+        .input:focus {
+            transform: scale(1.1);
+            outline: none;
+            border-color: hsl(var(--p));
+            box-shadow: 0 0 0 2px hsl(var(--p) / 20%);
+        }
+
+        /* Add a shake animation for invalid input */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .input:invalid {
+            animation: shake 0.3s ease-in-out;
+            border-color: hsl(var(--er));
+        }
+
+        /* Add smooth transition for theme changes */
+        html {
+            transition: all 0.3s ease;
+        }
+
+        /* Style for the theme toggle button */
+        .swap {
+            transition: transform 0.3s ease;
+        }
+
+        .swap:hover {
+            transform: scale(1.1);
+        }
+
+        .swap-active .swap-on {
+            display: block;
+        }
+
+        .swap-active .swap-off {
+            display: none;
+        }
+
+        @keyframes flipIn {
+            0% {
+                transform: rotateX(0deg);
+                background-color: hsl(var(--b2));
+            }
+            45% {
+                transform: rotateX(90deg);
+                background-color: hsl(var(--b2));
+            }
+            55% {
+                transform: rotateX(90deg);
+            }
+            100% {
+                transform: rotateX(0deg);
+            }
+        }
+
+        .flip-card {
+            animation: flipIn 0.6s ease-in-out forwards;
+            backface-visibility: hidden;
+            transform-origin: center;
+        }
+
+        /* Preserve animation state */
+        .flip-card {
+            animation-fill-mode: both;
+        }
+
+        /* Update theme transition */
+        html {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Ensure inputs maintain theme */
+        .input {
+            transition: all 0.3s ease;
+            background-color: hsl(var(--b1));
+            color: hsl(var(--bc));
+        }
+
+        @media (max-width: 640px) {
+            .input {
+                font-size: 1.5rem !important;
+            }
+
+            .badge-lg {
+                font-size: 1rem;
+            }
+        }
+    </style>
 
     <script>
         function checkCharacteristic(characteristic) {
@@ -461,7 +600,7 @@
             const html = document.querySelector('html');
             const themeToggle = document.getElementById('theme-toggle');
             const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'fantasy' ? 'dark' : 'fantasy';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
 
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
@@ -472,8 +611,7 @@
                 themeToggle.classList.remove('swap-active');
             }
 
-            // Save theme to session
-            fetch('/set-theme', {
+            fetch('/game/set-theme', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -485,143 +623,15 @@
 
         // Apply saved theme on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = '{{ session('theme', 'fantasy') }}';
+            const savedTheme = localStorage.getItem('theme') || 'light';
             const html = document.querySelector('html');
             const themeToggle = document.getElementById('theme-toggle');
 
             html.setAttribute('data-theme', savedTheme);
             if (savedTheme === 'dark') {
                 themeToggle.classList.add('swap-active');
-
             }
         });
     </script>
-
-    <style>
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes rain {
-            0% {
-                transform: translateY(-100vh);
-            }
-            100% {
-                transform: translateY(100vh);
-            }
-        }
-
-        .rain-drop {
-            position: fixed; /* Changed from absolute to fixed */
-            width: 2px;
-            height: 100px;
-            background: linear-gradient(transparent, #666);
-            animation: rain linear infinite;
-            z-index: 45; /* Between overlay and message */
-        }
-
-        #game-over-overlay {
-            backdrop-filter: blur(2px);
-            transition: all 0.3s ease;
-        }
-
-        /* Add these styles for the input boxes */
-        .input {
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            width: 4rem !important; /* Force wider boxes */
-            height: 4rem !important;
-            font-size: 2rem !important;
-        }
-
-        .input:focus {
-            transform: scale(1.1);
-            outline: none;
-            border-color: hsl(var(--p));
-            box-shadow: 0 0 0 2px hsl(var(--p) / 20%);
-        }
-
-        /* Add a shake animation for invalid input */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .input:invalid {
-            animation: shake 0.3s ease-in-out;
-            border-color: hsl(var(--er));
-        }
-
-        /* Add smooth transition for theme changes */
-        html {
-            transition: all 0.3s ease;
-        }
-
-        /* Style for the theme toggle button */
-        .swap {
-            transition: transform 0.3s ease;
-        }
-
-        .swap:hover {
-            transform: scale(1.1);
-        }
-
-        .swap-active .swap-on {
-            display: block;
-        }
-
-        .swap-active .swap-off {
-            display: none;
-        }
-
-        @keyframes flipIn {
-            0% {
-                transform: rotateX(0deg);
-                background-color: hsl(var(--b2));
-            }
-            45% {
-                transform: rotateX(90deg);
-                background-color: hsl(var(--b2));
-            }
-            55% {
-                transform: rotateX(90deg);
-            }
-            100% {
-                transform: rotateX(0deg);
-            }
-        }
-
-        .flip-card {
-            animation: flipIn 0.6s ease-in-out forwards;
-            backface-visibility: hidden;
-            transform-origin: center;
-        }
-
-        /* Preserve animation state */
-        .flip-card {
-            animation-fill-mode: both;
-        }
-
-        /* Update theme transition */
-        html {
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* Ensure inputs maintain theme */
-        .input {
-            transition: all 0.3s ease;
-            background-color: hsl(var(--b1));
-            color: hsl(var(--bc));
-        }
-
-    </style>
 </body>
 </html>
