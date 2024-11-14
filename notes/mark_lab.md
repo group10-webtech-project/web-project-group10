@@ -24,3 +24,12 @@
 - Done: Try hard wordle UX
 - Done: Added Icon
 - Done: Added Favicon
+
+
+14.11.2024
+* TODO: Mobile Responsiveness
+* TODO: Footer 
+* TODO: Deploy
+* TODO: Generate QR 
+
+ 

@@ -182,14 +182,7 @@ class GameController extends Controller
     public function index()
     {
         if (!session()->has('animal')) {
-            $this->startNewGame();
-        }
-
-        if (session('points', 0) <= 0 && !session('gameOver', false)) {
-            session([
-                'gameOver' => true,
-                'won' => false
-            ]);
+            return $this->newGame(new \Illuminate\Http\Request());
         }
 
         return view('game', [
@@ -197,12 +190,12 @@ class GameController extends Controller
             'guesses' => session('guesses', []),
             'gameOver' => session('gameOver', false),
             'won' => session('won', false),
-            'points' => session('points', 1000),
+            'points' => session('points', $this->startingPoints),
             'hints' => session('hints', []),
             'initialHint' => session('initialHint'),
             'hintCost' => $this->hintCost,
             'characteristicCost' => $this->characteristicCost,
-            'maxAttempts' => strlen(session('animal')),
+            'maxAttempts' => $this->maxGuesses,
             'theme' => session('theme', 'fantasy')
         ]);
     }
@@ -307,10 +300,8 @@ class GameController extends Controller
 
     public function newGame(Request $request)
     {
-        $currentTheme = session('theme', 'fantasy');
         $this->startNewGame();
-        session(['theme' => $currentTheme]);
-        return redirect()->route('game.index');
+        return redirect()->route('game.play');
     }
 
     private function startNewGame()
@@ -326,15 +317,24 @@ class GameController extends Controller
             'transactions'
         ]);
 
+        // Select a random animal
         $animalKey = array_rand($this->animals);
 
+        // Initialize new game session data
         session([
             'animal' => $animalKey,
             'initialHint' => $this->animals[$animalKey],
             'points' => $this->startingPoints,
             'characteristicChecks' => 0,
-            'transactions' => []
+            'transactions' => [],
+            'guesses' => [],
+            'hints' => [],
+            'gameOver' => false,
+            'won' => false
         ]);
+
+        // Add initial transaction
+        $this->addTransaction('Started new game', 0);
     }
 
     private function checkGuess($guess, $answer)
@@ -470,6 +470,13 @@ class GameController extends Controller
         $newPoints = max(0, $points - $amount);
         session(['points' => $newPoints]);
         return $newPoints;
+    }
+
+    public function setTheme(Request $request)
+    {
+        $theme = $request->input('theme', 'light');
+        session(['theme' => $theme]);
+        return response()->json(['success' => true]);
     }
 
 }
