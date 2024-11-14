@@ -11,14 +11,8 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10">
-    <!--
-    <div class="join w-full shadow-lg join w-full shadow-lg">
-        <input type="text" class="join-item input input-bordered input-lg flex-1 text-lg" id="guess">
-        <button id="submit">guess</button>
-    </div>
-    -->
-    <div>
-        <label class="input input-bordered flex items-center gap-2 w-1/2 mx-auto mt-1">
+    <div class="pt-2">
+        <label class="input input-bordered flex items-center gap-2 w-1/2 mx-auto">
             <input type="text" class="grow" placeholder="Search" id="search" autocomplete="off"/>
             <svg
                 id="submit"
