@@ -78,7 +78,7 @@
                 @if(!$gameOver && count($guesses) < 5)
                     <form action="{{ route('game.guess') }}" method="POST" class="mb-2">
                         @csrf
-                        <div class="flex justify-center gap-2">
+                        <div class="flex justify-center gap-2 bg-base-200 rounded-lg p-2">
                             @for($i = 0; $i < $wordLength; $i++)
                                 <input type="text"
                                        maxlength="1"
