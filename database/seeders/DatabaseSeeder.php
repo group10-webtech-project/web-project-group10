@@ -13,11 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+        ]);
+
+        $this->call([
+            AnimalCategorySeeder::class,  // Run categories first since animals depend on them
+            AnimalsSeeder::class,
+            GameDataSeeder::class
         ]);
     }
 }
