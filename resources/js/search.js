@@ -197,5 +197,38 @@ function showResult(animal) {
     //force update
     void animal_img.offsetWidth;
     animal_img.classList.add("fade-in-item");
-    animal_img.setAttribute("src", `imgs/${animal}.jpg`);
+    animal_img.setAttribute("src", `/imgs/${animal}.jpg`);
 }
+
+// Add some styling
+const style = document.createElement('style');
+style.textContent = `
+    .fade-in-item {
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    #selection_menu {
+        display: none;
+    }
+
+    #selection_menu:not(:empty) {
+        display: block;
+    }
+
+    #selection_menu li a {
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    #selection_menu li a:hover {
+        background-color: hsl(var(--p) / 0.1);
+    }
+`;
+document.head.appendChild(style);

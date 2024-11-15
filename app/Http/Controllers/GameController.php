@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Animal;
+use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
 
     private $maxGuesses = 5;
-    private $hintCost = 150;
-    private $characteristicCost = 100;
-    private $correctGuessPoints = 1000;
-    private $wrongGuessDeduction = 100;
-    private $startingPoints = 500;
+    private $hintCost = 200;
+    private $characteristicCost = 150;
+    private $correctGuessPoints = 2000;
+    private $wrongGuessDeduction = 150;
+    private $startingPoints = 1000;
 
 
     protected \Illuminate\Database\Eloquent\Collection $animals;
@@ -25,11 +26,19 @@ class GameController extends Controller
     }
     public function index()
     {
+        // Generate guest name if not logged in
+        if (!Auth::check()) {
+            session(['guest_name' => 'Guest_' . rand(1000, 9999)]);
+        }
+
+        $playerName = Auth::check() ? Auth::user()->name : session('guest_name');
+
         if (!session()->has('animal')) {
             return $this->newGame(new \Illuminate\Http\Request());
         }
 
         return view('game', [
+            'playerName' => $playerName,
             'wordLength' => strlen(session('animal')),
             'guesses' => session('guesses', []),
             'gameOver' => session('gameOver', false),
@@ -104,10 +113,13 @@ class GameController extends Controller
 
     public function buyHint()
     {
-        $points = session('points', 1000);
+        $points = session('points', $this->startingPoints);
 
         if ($points < $this->hintCost) {
-            return back()->with('error', 'Not enough points to buy a hint!');
+            return response()->json([
+                'success' => false,
+                'error' => 'Not enough points!'
+            ]);
         }
 
         $animal = session('animal');
@@ -115,11 +127,16 @@ class GameController extends Controller
         $availablePositions = array_diff(range(0, strlen($animal) - 1), $hints);
 
         if (empty($availablePositions)) {
-            return back()->with('error', 'No more hints available!');
+            return response()->json([
+                'success' => false,
+                'error' => 'No more hints available!'
+            ]);
         }
 
         $newHintPosition = array_rand($availablePositions);
         $hints[] = $newHintPosition;
+
+        $newPoints = $points - $this->hintCost;
 
         $this->addTransaction(
             "Purchased hint: Letter '" . $animal[$newHintPosition] . "' at position " . ($newHintPosition + 1),
@@ -127,26 +144,22 @@ class GameController extends Controller
         );
 
         session([
-            'points' => $points - $this->hintCost,
-            'hints' => $hints,
-            'currentHint' => [
-                'position' => $newHintPosition,
-                'letter' => $animal[$newHintPosition]
-            ]
+            'points' => $newPoints,
+            'hints' => $hints
         ]);
 
         return response()->json([
             'success' => true,
             'position' => $newHintPosition,
             'letter' => $animal[$newHintPosition],
-            'points' => $points - $this->hintCost
+            'points' => $newPoints
         ]);
     }
 
     public function newGame(Request $request)
     {
         $this->startNewGame();
-        return redirect()->route('game.play');
+        return redirect()->route('game.index');
     }
 
     private function startNewGame()
@@ -301,11 +314,11 @@ class GameController extends Controller
     private function addTransaction($action, $points)
     {
         $transactions = session('transactions', []);
-        $transactions[] = [
+        array_unshift($transactions, [
             'action' => $action,
             'points' => $points,
-            'timestamp' => now()->format('Y-m-d H:i:s')
-        ];
+            'timestamp' => now()->toIso8601String()
+        ]);
         session(['transactions' => $transactions]);
     }
 
@@ -345,7 +358,17 @@ class GameController extends Controller
 
     public function catalogue()
     {
-        return view('catalogue');
+        // Get all animals for the initial state
+        $animals = $this->animals->map(function($animal) {
+            return [
+                'name' => $animal->getShortName(),
+                'description' => $animal->getDescription()
+            ];
+        });
+
+        return view('catalogue', [
+            'animals' => $animals
+        ]);
     }
 
 }
