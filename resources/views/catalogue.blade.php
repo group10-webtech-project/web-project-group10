@@ -17,7 +17,7 @@
                 clip-rule="evenodd" />
             </svg>
         </label>
-        <ul id="selection_menu" class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow mx-auto left-0 right-0 text-xl absolute empty:hidden mt-1"></ul>
+        <ul id="selection_menu" class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow-xl mx-auto left-0 right-0 text-xl absolute empty:hidden mt-1"></ul>
     </div>
 
     <div class="card lg:card-side bg-base-100 shadow-xl w-3/4 mt-6 mx-auto">
