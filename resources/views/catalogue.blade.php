@@ -33,7 +33,7 @@
 
     <div class="card lg:card-side bg-base-100 shadow-xl w-3/4 mt-6 mx-auto">
         <figure class="min-w-96">
-            <img
+            <img class="w-full h-full object-cover"
             id="animal_image"
             src=""
             alt="Picture of animal" />
