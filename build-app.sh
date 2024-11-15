@@ -1,5 +1,9 @@
 #!/bin/bash
 
+composer require laravel/sail --dev
+cp .env.example .env
+alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+
 # Build assets using NPM
 npm run build
 
