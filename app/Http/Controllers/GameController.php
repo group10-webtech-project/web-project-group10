@@ -3,31 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Animal;
 
 class GameController extends Controller
 {
-    private $animals = [
-        'LION' => 'King of the jungle',
-        'TIGER' => 'Largest wild cat species',
-        'ZEBRA' => 'African equine with stripes',
-        'GIRAFFE' => 'Tallest living terrestrial animal',
-        'ELEPHANT' => 'Largest land mammal',
-        'PENGUIN' => 'Flightless aquatic bird',
-        'KANGAROO' => 'Marsupial that hops',
-        'DOLPHIN' => 'Intelligent marine mammal',
-        'PANDA' => 'Black and white bear from China',
-        'KOALA' => 'Tree-dwelling marsupial',
-        'CHEETAH' => 'Fastest land animal',
-        'GORILLA' => 'Largest living primate',
-        'RHINO' => 'Horned African mammal',
-        'HIPPO' => 'Semi-aquatic African mammal',
-        'SLOTH' => 'Slow-moving tree dweller',
-        'JAGUAR' => 'Spotted big cat of Americas',
-        'OSTRICH' => 'Largest flightless bird',
-        'OCTOPUS' => 'Intelligent sea creature',
-        'GAZELLE' => 'Swift African antelope',
-        'RACCOON' => 'Masked nocturnal mammal'
-    ];
 
     private $maxGuesses = 5;
     private $hintCost = 150;
@@ -36,149 +15,14 @@ class GameController extends Controller
     private $wrongGuessDeduction = 100;
     private $startingPoints = 500;
 
-    private $animalCharacteristics = [
-        'LION' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'TIGER' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'ZEBRA' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'GIRAFFE' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'ELEPHANT' => [
-            'has_legs' => true,
-            'has_fur' => false,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'PENGUIN' => [
-            'has_legs' => true,
-            'has_fur' => false,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'KANGAROO' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'DOLPHIN' => [
-            'has_legs' => false,
-            'has_fur' => false,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'PANDA' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'KOALA' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'CHEETAH' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'GORILLA' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'RHINO' => [
-            'has_legs' => true,
-            'has_fur' => false,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'HIPPO' => [
-            'has_legs' => true,
-            'has_fur' => false,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'SLOTH' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'JAGUAR' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'OSTRICH' => [
-            'has_legs' => true,
-            'has_fur' => false,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'OCTOPUS' => [
-            'has_legs' => false,
-            'has_fur' => false,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ],
-        'GAZELLE' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => false,
-            'can_fly' => false,
-            'is_carnivore' => false
-        ],
-        'RACCOON' => [
-            'has_legs' => true,
-            'has_fur' => true,
-            'can_swim' => true,
-            'can_fly' => false,
-            'is_carnivore' => true
-        ]
-    ];
 
+    protected \Illuminate\Database\Eloquent\Collection $animals;
+
+
+    public function __construct()
+    {
+        $this->animals = Animal::with('category')->get();
+    }
     public function index()
     {
         if (!session()->has('animal')) {
@@ -239,6 +83,7 @@ class GameController extends Controller
 
 
         $points = max(0, $points);
+
         $gameOver = $gameOver || $points <= 0;
 
 
@@ -252,7 +97,7 @@ class GameController extends Controller
         // Instead of redirecting, return JSON response
         return response()->json([
             'success' => true,
-            'gameOver' => $gameOver ?? false,
+            'gameOver' => $gameOver,
             'message' => $message ?? '',
         ]);
     }
@@ -317,13 +162,25 @@ class GameController extends Controller
             'transactions'
         ]);
 
-        // Select a random animal
-        $animalKey = array_rand($this->animals);
+
+        //$animals = Animal::with('category')->get();
+
+        /**
+         * @var Animal $randomAnimal
+         */
+        $randomAnimal = $this->animals->random();
+
+        $animalName = $randomAnimal->getShortName();
+        // or get a full name:
+        //$animalName = $randomAnimal->getName();
+        $animalHint = $randomAnimal->getInitialHint();
+        $animalId = $randomAnimal->getId();
 
         // Initialize new game session data
         session([
-            'animal' => $animalKey,
-            'initialHint' => $this->animals[$animalKey],
+            'animal_id' => $randomAnimal->id,
+            'animal' => $animalName,
+            'initialHint' => $animalHint,
             'points' => $this->startingPoints,
             'characteristicChecks' => 0,
             'transactions' => [],
@@ -409,8 +266,13 @@ class GameController extends Controller
                 'points' => $points
             ]);
         }
+        $animalId = session('animal_id');
 
-        $result = $this->animalCharacteristics[$animal][$characteristic] ?? false;
+        /**
+         * @var Animal $animal
+         */
+        $animal = $this->animals->firstWhere('id', $animalId);
+        $result =  $animal->getCharacteristic($characteristic) ?? false;
         $newPoints = $points - $this->characteristicCost;
         $gameOver = $newPoints <= 0;
 
@@ -472,11 +334,18 @@ class GameController extends Controller
         return $newPoints;
     }
 
+
     public function setTheme(Request $request)
     {
         $theme = $request->input('theme', 'light');
         session(['theme' => $theme]);
         return response()->json(['success' => true]);
+    }
+
+
+    public function catalogue()
+    {
+        return view('catalogue');
     }
 
 }
