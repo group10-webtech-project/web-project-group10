@@ -27,8 +27,10 @@ class GameController extends Controller
     public function index()
     {
         // Generate guest name if not logged in
-        if (!Auth::check()) {
+        if (!Auth::check() && !session()->has('guest_name')) {
             session(['guest_name' => 'Guest_' . rand(1000, 9999)]);
+            // Initialize points for new guest
+            session(['points' => $this->startingPoints]);
         }
 
         $playerName = Auth::check() ? Auth::user()->name : session('guest_name');

@@ -14,7 +14,7 @@
 
     <div class="card lg:card-side bg-base-100 shadow-xl max-w-5xl mx-auto mt-8">
         <figure class="lg:w-1/2 h-[400px]">
-            <img id="animal_image" src="{{ asset('imgs/alligator.jpg') }}" alt="Animal" class="w-full h-full object-cover" />
+            <img id="animal_image" src="{{ asset('imgs/alligator.jpg') }}" alt="Animal" class="w-full h-full p-0" />
         </figure>
         <div class="card-body lg:w-1/2">
             <h2 class="card-title text-2xl" id="animal_name">Select an animal</h2>
