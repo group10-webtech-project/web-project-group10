@@ -44,7 +44,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/game', [GameController::class, 'index'])->name('game.index');
     Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
