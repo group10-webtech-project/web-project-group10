@@ -232,6 +232,7 @@ function showResult(animal) {
         const item = document.createElement("span");
         item.classList.add("fade-in-item");
         item.classList.add("word");
+        item.classList.add("word");
 
         item.textContent = `${e} `;
 
@@ -244,16 +245,5 @@ function showResult(animal) {
     void animal_img.offsetWidth;
     animal_img.classList.add("fade-in-item");
     animal_img.setAttribute("src", `imgs/${animal}.jpg`);
-}
-
-
-
-function logAnimations(a) {
-    const animations = a.getAnimations();
-    animations.forEach((animation, index) => {
-        console.log(`Animation ${index + 1}:`);
-        console.log(`Name: ${animation.animationName || "Unknown"}`);
-        console.log(`Duration: ${animation.effect.getTiming().duration}ms`);
-        console.log(`Play state: ${animation.playState}`);
-    });
+    animal_img.setAttribute("src", `imgs/${animal}.jpg`);
 }
