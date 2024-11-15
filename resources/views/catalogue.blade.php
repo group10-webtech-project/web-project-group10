@@ -3,8 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="pt-2">
-        <label class="input input-bordered flex items-center gap-2 w-1/2 mx-auto">
-        <label class="input input-bordered flex items-center gap-2 w-1/2 mx-auto">
+        <label class="input input-bordered flex items-center w-1/2 mx-auto">
             <input type="text" class="grow" placeholder="Search animals..." id="search" autocomplete="off"/>
             <svg
                 id="submit"
@@ -28,7 +27,7 @@
                 clip-rule="evenodd" />
             </svg>
         </label>
-        <ul id="selection_menu" class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow mx-auto left-0 right-0 text-xl absolute empty:hidden mt-1"></ul>
+        <ul id="selection_menu" class="menu dropdown-content bg-base-100 rounded-box z-[1] w-1/2 shadow-xl mx-auto left-0 right-0 text-xl absolute empty:hidden mt-1"></ul>
     </div>
 
     <div class="card lg:card-side bg-base-100 shadow-xl w-3/4 mt-6 mx-auto">
