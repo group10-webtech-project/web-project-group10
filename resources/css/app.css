@@ -22,6 +22,10 @@
 .fade-in-item {
     opacity: 0;
     animation: fade-in 1s forwards;
+
+}
+
+.word {
     /*this is needed for transfroms to apply to spans*/
     display: inline-block;
     /*if display is inline-block for some reason the left spaces are ignored*/
