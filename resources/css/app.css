@@ -7,3 +7,23 @@
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
     border-radius: 2rem;
 }
+
+@keyframes fade-in {
+0% {
+    opacity: 0;
+    transform: translateY(20px);
+}
+100% {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+.fade-in-item {
+    opacity: 0;
+    animation: fade-in 1s forwards;
+    /*this is needed for transfroms to apply to spans*/
+    display: inline-block;
+    /*if display is inline-block for some reason the left spaces are ignored*/
+    margin-left: 0.5rem;
+}

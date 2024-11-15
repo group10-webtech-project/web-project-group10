@@ -334,4 +334,8 @@ class GameController extends Controller
         return $newPoints;
     }
 
+    public function catalogue()
+    {
+        return view('catalogue');
+    }
 }
