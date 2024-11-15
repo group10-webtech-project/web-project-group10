@@ -45,12 +45,19 @@ sail up -d
 ```
 Once the application's containers have been started, you may access the project in your web browser at: http://localhost.
 
+## Database
 ```shell
 # Generate the encryption key:
 sail artisan key:generate
 
 # Run "artisan migrate" to run database migrations:  
 sail artisan migrate
+
+# Run 'seeds' - populate the database
+sail artisan db:seed
+
+# To regenerate the migrations and populate(seed) the database run:
+sail artisan migrate:fresh --seed
 ```
 
 then

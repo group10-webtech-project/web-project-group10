@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $name
+ * @property string $short_name
  * @property string $size
  * @property string $habitat
  * @property string $diet
@@ -23,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $can_fly
  * @property int $category_id
  * @property string|null $description
+ * @property string|null $initial_hint
  * @property string|null $image_url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -50,6 +52,7 @@ class Animal extends Model
 
     protected $fillable = [
         'name',
+        'short_name',
         'size',
         'habitat',
         'diet',
@@ -61,6 +64,7 @@ class Animal extends Model
         'can_fly',
         'category_id',
         'description',
+        'initial_hint',
         'image_url',
     ];
 
@@ -103,5 +107,29 @@ class Animal extends Model
             throw new \InvalidArgumentException('Invalid diet type.');
         }
         $this->attributes['diet'] = $value;
+    }
+
+    public function getId(): int
+    {
+        return $this->attributes['id'];
+    }
+
+    public function getShortName(): string
+    {
+       return  strtoupper($this->attributes['short_name']);
+    }
+
+    public function getName(): string
+    {
+        return strtoupper($this->attributes['name']);
+    }
+
+    public function getInitialHint(): string
+    {
+        return ucfirst($this->attributes['initial_hint']);
+    }
+    public function getCharacteristic(string $value): string
+    {
+        return ucfirst($this->attributes[strtolower($value)]);
     }
 }

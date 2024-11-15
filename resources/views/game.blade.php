@@ -367,6 +367,7 @@
             const inputs = Array.from(document.querySelectorAll('[data-position]'));
             const guess = inputs.map(input => input.value.toUpperCase()).join('');
             document.getElementById('finalGuess').value = guess;
+            console.log(guess);
 
             const form = document.querySelector('form[action*="guess"]');
             const formData = new FormData(form);
