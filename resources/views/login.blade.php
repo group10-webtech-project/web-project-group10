@@ -1,56 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
+@extends('layouts.app')
 
-    <div class="card w-full max-w-md bg-base-100 shadow-lg">
+@section('content')
+<div class="min-h-screen flex items-center justify-center px-4">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl">
         <div class="card-body">
-            <h1 class="text-2xl font-bold text-center mb-4">Login</h1>
+            <h2 class="card-title text-2xl font-bold mb-6">Welcome Back!</h2>
 
             @if(session('message'))
-                <div class="alert alert-info shadow-lg mb-4">
-                    <p class="text-sm">{{ session('message') }}</p>
+                <div class="alert alert-info mb-4">
+                    <p>{{ session('message') }}</p>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-error shadow-lg mb-4">
-                    <p class="text-sm">{{ session('error') }}</p>
+                <div class="alert alert-error mb-4">
+                    <p>{{ session('error') }}</p>
                 </div>
             @endif
 
-            <form action="/login" method="POST">
+            <form action="{{ route('login') }}" method="POST" class="space-y-4">
                 @csrf
-
-                <div class="form-control mb-4">
-                    <label for="email" class="label">
+                <div class="form-control">
+                    <label class="label">
                         <span class="label-text">Email</span>
                     </label>
-                    <input type="email" name="email" id="email" class="input input-bordered" value="{{ old('email') }}" required>
-                    @error('email')
-                        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
+                    <input type="email" name="email" class="input input-bordered" required />
                 </div>
 
-                <div class="form-control mb-6">
-                    <label for="password" class="label">
+                <div class="form-control">
+                    <label class="label">
                         <span class="label-text">Password</span>
+                        <a href="{{ route('password.request') }}" class="label-text-alt link link-primary">
+                            Forgot password?
+                        </a>
                     </label>
-                    <input type="password" name="password" id="password" class="input input-bordered" required>
-                    @error('password')
-                        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
+                    <input type="password" name="password" class="input input-bordered" required />
                 </div>
 
-                <button type="submit" class="btn btn-primary w-full hover:scale-105 transition-transform duration-200">Login</button>
+                <div class="form-control">
+                    <label class="label cursor-pointer">
+                        <span class="label-text">Remember me</span>
+                        <input type="checkbox" name="remember" class="checkbox checkbox-primary" />
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full">Login</button>
             </form>
+
+            <div class="divider">OR</div>
+
+            <div class="text-center space-y-4">
+                <a href="{{ route('register') }}" class="btn btn-outline btn-primary w-full">
+                    Create New Account
+                </a>
+                <p class="text-sm">
+                    Want to try first?
+                    <a href="{{ route('game.index') }}" class="link link-primary">Play as Guest</a>
+                </p>
+            </div>
         </div>
     </div>
-
-</body>
-</html>
+</div>
+@endsection

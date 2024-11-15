@@ -20,7 +20,7 @@
                         <span class="hidden sm:inline">Login</span>
                         <span class="sm:hidden">👤</span>
                     </a>
-                    <a href="{{ route('game.play') }}" class="btn btn-accent join-item hover:scale-105 transition-transform">
+                    <a href="{{ route('game.index') }}" class="btn btn-accent join-item hover:scale-105 transition-transform">
                         <span class="hidden sm:inline">Play as Guest</span>
                         <span class="sm:hidden">Play 🎲</span>
                     </a>
@@ -240,8 +240,4 @@
     }
 </script>
 
-<!-- Update the footer section -->
-<footer class="mt-16 text-center py-8 border-t border-base-300">
-    <p class="text-base-content/60">&copy; {{ date('Y') }} Nerdle. All rights reserved. (not really)</p>
-</footer>
 @endsection
