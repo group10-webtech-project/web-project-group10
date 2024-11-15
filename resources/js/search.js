@@ -245,15 +245,3 @@ function showResult(animal) {
     animal_img.classList.add("fade-in-item");
     animal_img.setAttribute("src", `imgs/${animal}.jpg`);
 }
-
-
-
-function logAnimations(a) {
-    const animations = a.getAnimations();
-    animations.forEach((animation, index) => {
-        console.log(`Animation ${index + 1}:`);
-        console.log(`Name: ${animation.animationName || "Unknown"}`);
-        console.log(`Duration: ${animation.effect.getTiming().duration}ms`);
-        console.log(`Play state: ${animation.playState}`);
-    });
-}
