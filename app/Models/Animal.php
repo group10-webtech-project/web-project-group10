@@ -62,6 +62,7 @@ class Animal extends Model
         'has_fur',
         'can_swim',
         'can_fly',
+        'is_carnivore',
         'category_id',
         'description',
         'initial_hint',
