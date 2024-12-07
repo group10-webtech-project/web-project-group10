@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -16,30 +14,36 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $validated = $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required'
         ]);
 
-        $credentials = $request ->only('email','password');
-
-        if (Auth::attempt($credentials)) 
-        {
-            return redirect()->intended('/dashboard');
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('game.index'));
         }
 
-        return back()->with(['error' => 'Incorrect email or password.']);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('landing');
     }
 
     public function dashboard()
     {
         return view('dashboard');
     }
-    
-    public function logout()
-    {
-        Auth::logout();
-        return redirect('/login');
-    }
 
+    protected function authenticated(Request $request, $user)
+    {
+        return redirect()->intended('/game');
+    }
 }

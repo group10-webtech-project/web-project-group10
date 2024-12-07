@@ -150,20 +150,63 @@ let result = document.getElementById("result");
 let info = document.getElementById("info");
 let info_title = document.getElementById("animal_name");
 let animal_img = document.getElementById("animal_image");
+let current_selected = -1;
+let possible_options = [];
 
 guess_input.addEventListener("input", (e) => populateMenu());
 document.getElementById("submit").addEventListener("click", (e) => {e.preventDefault(); showResult(guess_input.value);})
 
 showResult("alligator");
 
+addEventListener("keydown", (event) => {
+    if(current_selected>=0 && possible_options.length>0)
+    {
+        menu.children[current_selected].classList.remove("selected");
+    }
+
+    if(event.key == "ArrowUp")
+    {
+        event.preventDefault();
+        if(current_selected > 0)
+        {
+            current_selected--;
+        }
+    }
+    else if(event.key == "ArrowDown")
+    {
+        event.preventDefault();
+        if(current_selected < possible_options.length-1)
+        {
+            current_selected++;
+        }
+    }
+    else if(event.key == "Enter")
+    {
+        if(current_selected>=0 && possible_options.length>0)
+        {
+            guess_input.value = possible_options[current_selected];
+            menu.innerHTML = '';
+            showResult(guess_input.value);
+            current_selected = -1;
+        }
+    }
+
+    if(current_selected>=0 && possible_options.length>0)
+    {
+        menu.children[current_selected].classList.add("selected");
+    }
+    //console.log(current_selected);
+});
+
 function populateMenu() {
     menu.innerHTML = '';
     if(guess_input.value == '')
     {
+        possible_options = [];
         return
     }
 
-    const possible_options = animals.keys().filter(element => element.startsWith(guess_input.value.toLowerCase()));
+    possible_options = Array.from(animals.keys().filter(element => element.startsWith(guess_input.value.toLowerCase())));
     possible_options.forEach(element => {
         let option = document.createElement('a');
         let list_elemnt = document.createElement('li');
@@ -172,10 +215,12 @@ function populateMenu() {
             guess_input.value = element;
             menu.innerHTML = '';
             showResult(guess_input.value);
+            console.log(logAnimations(list_elemnt));
         })
         list_elemnt.appendChild(option);
         menu.appendChild(list_elemnt);
     });
+    current_selected = -1;
 
 }
 
@@ -186,6 +231,7 @@ function showResult(animal) {
     animals.get(animal).split(" ").forEach((e,i) => {
         const item = document.createElement("span");
         item.classList.add("fade-in-item");
+        item.classList.add("word");
 
         item.textContent = `${e} `;
 

@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="{{ session('theme', 'fantasy') }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Nerdle</title>
-    <link rel="icon" href="{{ asset('icon.svg') }}" type="image/svg+xml">
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/search.js'])
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-</head>
+@extends('layouts.app')
 
-<body class="min-h-screen bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10">
+@section('content')
+<div class="container mx-auto px-4 py-8">
     <div class="pt-2">
-        <label class="input input-bordered flex items-center gap-2 w-1/2 mx-auto">
-            <input type="text" class="grow" placeholder="Search" id="search" autocomplete="off"/>
+        <label class="input input-bordered flex items-center w-1/2 mx-auto">
+            <input type="text" class="grow" placeholder="Search animals..." id="search" autocomplete="off"/>
             <svg
                 id="submit"
                 xmlns="http://www.w3.org/2000/svg"
@@ -26,12 +17,12 @@
                 clip-rule="evenodd" />
             </svg>
         </label>
-        <ul id="selection_menu" class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow mx-auto left-0 right-0 text-xl absolute empty:hidden mt-1"></ul>
+        <ul id="selection_menu" class="menu dropdown-content bg-base-100 rounded-box z-[1] w-1/2 shadow-xl mx-auto left-0 right-0 text-xl absolute empty:hidden mt-1"></ul>
     </div>
 
     <div class="card lg:card-side bg-base-100 shadow-xl w-3/4 mt-6 mx-auto">
         <figure class="min-w-96">
-            <img
+            <img class="w-full h-full object-cover"
             id="animal_image"
             src=""
             alt="Picture of animal" />
@@ -41,7 +32,7 @@
             <p id="info"></p>
         </div>
     </div>
+</div>
 
-</body>
-
-</html>
+@vite(['resources/js/search.js'])
+@endsection
