@@ -12,17 +12,18 @@ class NavigationTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
                 ->pause(1000)
-                ->click('.logo')
+                ->clickLink('Login')
+                ->pause(1000)
                 ->assertPathIs('/login')
-                ->assertSee('Login')
-                ->clickLink('Sign Up')
-                ->assertPathIs('/register')
-                ->assertSee('Register')
-                ->click('a[href="/login"]')
+                ->assertSee('Welcome Back!')
+                ->clickLink('Forgot password?')
+                ->assertPathIs('/forgot-password')
+                ->assertSee('Reset Password')
+                ->clickLink('Back to Login')
                 ->assertPathIs('/login')
-                ->click('.logo')
-                ->assertPathIs('/')
-                ->assertSee('Nerdle');
+                ->assertSee('Welcome Back!')
+                ->clickLink('Nerdle')
+                ->assertPathIs('/');
         });
     }
 }
