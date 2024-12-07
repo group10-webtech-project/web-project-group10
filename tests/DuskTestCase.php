@@ -28,14 +28,12 @@ abstract class DuskTestCase extends BaseTestCase
     protected function driver(): RemoteWebDriver
     {
         $options = (new ChromeOptions)->addArguments([
-            '--window-size=1920,1080',
             '--disable-gpu',
-            '--no-sandbox',
-            '--disable-dev-shm-usage',
+            '--window-size=1920,1080',
         ]);
 
         return RemoteWebDriver::create(
-            'http://localhost:9515',
+            $_ENV['DUSK_DRIVER_URL'] ?? 'http://localhost:9515',
             DesiredCapabilities::chrome()->setCapability(
                 ChromeOptions::CAPABILITY, $options
             )
