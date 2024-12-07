@@ -177,8 +177,20 @@ class GameController extends Controller
             'transactions'
         ]);
 
-        // Select a random animal
-        $animalKey = array_rand($this->animals);
+
+        //$animals = Animal::with('category')->get();
+
+        /**
+         * @var Animal $randomAnimal
+         */
+        $randomAnimal = $this->animals->random();
+
+        $animalName = $randomAnimal->getShortName();
+        // or get a full name:
+        //$animalName = $randomAnimal->getName();
+        $animalHint = $randomAnimal->getInitialHint();
+        $animalId = $randomAnimal->getId();
+
 
         // Initialize new game session data
         session([
@@ -337,6 +349,7 @@ class GameController extends Controller
         session(['points' => $newPoints]);
         return $newPoints;
     }
+
 
     public function setTheme(Request $request)
     {

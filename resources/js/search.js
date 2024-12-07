@@ -232,7 +232,7 @@ function showResult(animal) {
         const item = document.createElement("span");
         item.classList.add("fade-in-item");
         item.classList.add("word");
-        item.classList.add("word");
+
 
         item.textContent = `${e} `;
 
