@@ -133,4 +133,10 @@ class Animal extends Model
     {
         return ucfirst($this->attributes[strtolower($value)]);
     }
+
+    public function gameSessions()
+    {
+        return $this->hasMany(GameSessions::class, 'animal_id');
+    }
+
 }

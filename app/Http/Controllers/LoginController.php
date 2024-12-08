@@ -21,6 +21,11 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+
+            if (Auth::check() && Auth::user()->role === 'admin') {
+                return redirect()->intended('/admin');
+            }
+
             return redirect()->intended(route('game.index'));
         }
 

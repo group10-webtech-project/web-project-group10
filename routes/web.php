@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnimalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\RegisterController;
@@ -10,6 +11,28 @@ use App\Http\Controllers\SettingsController;
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    // Admin dashboard
+    Route::get('/', function () {
+        $animals = \App\Models\Animal::with('category')->paginate(10);
+        return view('admin.index', compact('animals'));
+    })->name('admin.dashboard');
+
+
+    // Animal CRUD routes
+    Route::controller(AnimalController::class)->group(function () {
+        Route::get('/animals', 'index')->name('admin.animals');
+         Route::get('/animals/create', 'create')->name('admin.animals.create');
+         Route::post('/animals', 'store')->name('admin.animals.store');
+         Route::get('/animals/{animal}/edit', 'edit')->name('admin.animals.edit');
+         Route::put('/animals/{animal}', 'update')->name('admin.animals.update');
+         Route::delete('/animals/{animal}', 'destroy')->name('admin.animals.destroy');
+         Route::get('/animals/{animal}', [AnimalController::class, 'show'])->name('admin.animals.show');
+
+    });
+});
 
 // Game routes
 Route::controller(GameController::class)->group(function () {
