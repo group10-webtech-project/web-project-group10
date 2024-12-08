@@ -1,57 +1,82 @@
 <?php
 
-namespace Tests\Unit;
-
+use App\Models\GameSessions;
+use App\Models\User;
 use App\Models\Animal;
+use App\Models\Categories;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class GameSessionsTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_game_session_can_be_created()
-    {
-        $user = \App\Models\User::create([
-            'username' => 'test',
-            'name' => 'test',
-            'email' => 'test@test.com',
-            'password'=> '12345678',
-        ]);
+beforeEach(function () {
+    $user = User::factory()->create();
+    $category = Categories::create([
+        'name' => 'Test Category',
+        'description' => 'Test Description'
+    ]);
 
-        $category = \App\Models\Categories::create([
-            'name' => 'Mammals',
-            'description' => 'Mammals Description',
-        ]);
-        $animal = Animal::create([
-            'name' => 'Lion',
-            'size' => 'Large',
-            'habitat' => 'Savannah',
-            'diet' => 'Carnivore',
-            'region' => 'Africa',
-            'lifespan' => '10-14 years',
-            'category_id' => $category->id,  // Use the created category's ID
-            'description' => 'The king of the jungle',
-            'image_url' => 'http://example.com/lion.jpg',
-        ]);
+    $animal = Animal::create([
+        'name' => 'Test Animal',
+        'short_name' => 'Test',
+        'size' => 'Large',
+        'habitat' => 'Forest',
+        'diet' => 'Herbivore',
+        'region' => 'Test Region',
+        'lifespan' => '10 years',
+        'has_legs' => true,
+        'has_fur' => true,
+        'can_swim' => false,
+        'can_fly' => false,
+        'is_carnivore' => false,
+        'category_id' => $category->id,
+        'description' => 'Test description',
+        'initial_hint' => 'Test hint',
+        'image_url' => 'test.jpg'
+    ]);
 
-        $date = now();
+    $this->gameSession = GameSessions::create([
+        'user_id' => $user->id,
+        'animal_id' => $animal->id,
+        'attempts' => 5,
+        'won' => true,
+        'started_at' => now(),
+        'completed_at' => now()->addMinutes(10)
+    ]);
+});
 
-        // Create a category first
-        $gameSession = \App\Models\GameSessions::create([
-            'user_id' => $user->id,
-            'animal_id' => $animal->id,
-            'attempts' => 5,
-            'won' => true,
-            'started_at' => $date,
-            'completed_at' => $date,
-        ]);
+test('game session model has correct attributes', function () {
+    expect($this->gameSession)
+        ->attempts->toBe(5)
+        ->won->toBeTrue()
+        ->started_at->toBeInstanceOf(Carbon\Carbon::class)
+        ->completed_at->toBeInstanceOf(Carbon\Carbon::class);
+});
 
+test('fillable attributes are correctly defined', function () {
+    $fillable = [
+        'user_id',
+        'animal_id',
+        'attempts',
+        'won',
+        'started_at',
+        'completed_at'
+    ];
 
-        $this->assertDatabaseHas('game_sessions', [
-            'attempts' => 5,
-            'won' => true,
-            'started_at' => $date,
-        ]);
-    }
-}
+    expect($this->gameSession->getFillable())->toBe($fillable);
+});
+
+test('casts are correctly defined', function () {
+    $casts = [
+        'id' => 'int',
+        'user_id' => 'integer',
+        'animal_id' => 'integer',
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+    ];
+
+    expect($this->gameSession->getCasts())->toBe($casts);
+});
+
+test('model uses correct table name', function () {
+    expect($this->gameSession->getTable())->toBe('game_sessions');
+});

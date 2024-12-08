@@ -1,78 +1,114 @@
 <?php
 
-namespace Tests\Unit;
-
 use App\Models\Animal;
+use App\Models\Categories;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class AnimalTest extends TestCase
-{
-    use RefreshDatabase; // This trait will reset the database after each test
+uses(RefreshDatabase::class);
 
-    public function test_animal_can_be_created()
-    {
-        // Create a category first
-        $category = \App\Models\Categories::create([
-            'name' => 'Mammals'
-        ]);
+beforeEach(function () {
+    $this->category = Categories::create([
+        'name' => 'Mammals',
+        'description' => 'Test category description'
+    ]);
 
-        $animal = Animal::create([
-            'name' => 'Lion',
-            'size' => 'Large',
-            'habitat' => 'Savannah',
-            'diet' => 'Carnivore',
-            'region' => 'Africa',
-            'lifespan' => '10-14 years',
-            'category_id' => $category->id,  // Use the created category's ID
-            'description' => 'The king of the jungle',
-            'image_url' => 'http://example.com/lion.jpg',
-        ]);
+    $this->animal = Animal::create([
+        'name' => 'Test Animal',
+        'short_name' => 'Test',
+        'size' => 'Large',
+        'habitat' => 'Forest',
+        'diet' => 'Herbivore',
+        'region' => 'Test Region',
+        'lifespan' => '10 years',
+        'has_legs' => true,
+        'has_fur' => true,
+        'can_swim' => false,
+        'can_fly' => false,
+        'is_carnivore' => false,
+        'category_id' => $this->category->id,
+        'description' => 'Test description',
+        'initial_hint' => 'Test hint',
+        'image_url' => 'http://example.com/image.jpg'
+    ]);
+});
 
-        $this->assertDatabaseHas('animals', [
-            'name' => 'Lion',
-            'diet' => 'Carnivore',
-        ]);
-    }
+test('animal model has correct attributes', function () {
+    expect($this->animal)
+        ->name->toBe('Test Animal')
+        ->short_name->toBe('Test')
+        ->size->toBe('Large')
+        ->habitat->toBe('Forest')
+        ->diet->toBe('Herbivore')
+        ->region->toBe('Test Region')
+        ->lifespan->toBe('10 years')
+        ->has_legs->toBeTrue()
+        ->has_fur->toBeTrue()
+        ->can_swim->toBeFalse()
+        ->can_fly->toBeFalse()
+        ->is_carnivore->toBeFalse()
+        ->category_id->toBe($this->category->id)
+        ->description->toBe('Test description')
+        ->initial_hint->toBe('Test hint')
+        ->image_url->toBe('http://example.com/image.jpg');
+});
 
-    public function test_get_description()
-    {
-        $animal = new Animal();
-        $animal->setDescription('the king of the jungle');
+test('animal belongs to a category', function () {
+    expect($this->animal->category)
+        ->toBeInstanceOf(Categories::class)
+        ->name->toBe('Mammals');
+});
 
-        $this->assertEquals('The king of the jungle', $animal->getDescription());
-    }
+test('getName returns uppercase name', function () {
+    expect($this->animal->getName())->toBe('TEST ANIMAL');
+});
 
-    public function test_set_diet_with_valid_value()
-    {
-        $animal = new Animal();
-        $animal->setDiet('Herbivore');
+test('getShortName returns uppercase short name', function () {
+    expect($this->animal->getShortName())->toBe('TEST');
+});
 
-        $this->assertEquals('Herbivore', $animal->diet);
-    }
+test('getDescription returns capitalized description', function () {
+    expect($this->animal->getDescription())->toBe('Test description');
+});
 
-    public function test_set_diet_with_invalid_value()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $animal = new Animal();
-        $animal->setDiet('InvalidDiet');
-    }
+test('getInitialHint returns capitalized hint', function () {
+    expect($this->animal->getInitialHint())->toBe('Test hint');
+});
 
-    public function test_animal_belongs_to_category()
-    {
-        // Assuming you have a Category model and a categories table
-        $category = \App\Models\Categories::create(['name' => 'Mammals']);
-        $animal = Animal::create([
-            'name' => 'Elephant',
-            'size' => 'Large',
-            'habitat' => 'Savannah',
-            'diet' => 'Herbivore',
-            'region' => 'Africa',
-            'lifespan' => '60-70 years',
-            'category_id' => $category->id,
-        ]);
+test('setDescription converts to lowercase', function () {
+    $this->animal->setDescription('NEW DESCRIPTION');
+    expect($this->animal->getDescription())->toBe('New description');
+});
 
-        $this->assertInstanceOf(\App\Models\Categories::class, $animal->category);
-        $this->assertEquals($category->id, $animal->category->id);
-    }
-}
+test('setDiet validates diet types', function () {
+    // Valid diets should work
+    expect(fn() => $this->animal->setDiet('Herbivore'))->not->toThrow(\InvalidArgumentException::class);
+    expect(fn() => $this->animal->setDiet('Carnivore'))->not->toThrow(\InvalidArgumentException::class);
+    expect(fn() => $this->animal->setDiet('Omnivore'))->not->toThrow(\InvalidArgumentException::class);
+
+    // Invalid diet should throw exception
+    expect(fn() => $this->animal->setDiet('Invalid'))
+        ->toThrow(\InvalidArgumentException::class, 'Invalid diet type.');
+});
+
+test('getCharacteristic returns capitalized attribute value', function () {
+    expect($this->animal->getCharacteristic('habitat'))->toBe('Forest');
+});
+
+test('getId returns correct id', function () {
+    expect($this->animal->getId())->toBe($this->animal->id);
+});
+
+test('model uses correct table name', function () {
+    expect($this->animal->getTable())->toBe('animals');
+});
+
+test('fillable attributes are correctly defined', function () {
+    $fillable = [
+        'name', 'short_name', 'size', 'habitat', 'diet', 'region',
+        'lifespan', 'has_legs', 'has_fur', 'can_swim', 'can_fly',
+        'is_carnivore',
+        'category_id', 'description', 'initial_hint', 'image_url'
+    ];
+
+    expect($this->animal->getFillable())->toBe($fillable);
+});
