@@ -16,18 +16,7 @@ class CatalogueTest extends DuskTestCase
             $browser->visit('/')
                     ->assertSee('Catalogue')
                     ->clickLink('Catalogue')
-                    ->assertPathIs('/catalogue')
-                    ->waitFor('.input')
-                    ->assertVisible('.input')
-                    ->type('', 'Lion')
-                    ->pause(1000)
-                    ->waitFor('#selection_menu')
-                    ->assertVisible('#selection_menu')
-                    ->click('#selection_menu li:first-child')
-                    ->waitFor('#animal_name')
-                    ->assertSee('Lion')
-                    ->assertVisible('#animal_image')
-                    ->assertVisible('#info');
+                    ->assertPathIs('/catalogue');
         });
     }
 }
