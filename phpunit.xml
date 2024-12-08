@@ -14,6 +14,9 @@
         <testsuite name="Browser/Dusk">
             <directory>tests/Browser/Dusk</directory>
         </testsuite>
+        <testsuite name="Load">
+            <directory>tests/Load</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
