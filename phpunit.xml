@@ -11,8 +11,8 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
-        <testsuite name="Browser">
-            <directory>tests/Browser</directory>
+        <testsuite name="Browser/Dusk">
+            <directory>tests/Browser/Dusk</directory>
         </testsuite>
     </testsuites>
     <source>
