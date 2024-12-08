@@ -10,6 +10,7 @@ export default {
         './resources/**/*.vue',
     ],
     theme: {
+        ...defaultTheme,
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
@@ -49,5 +50,6 @@ export default {
             "coffee",
             "winter"
         ],
+        darkTheme: "dark"
     },
 };
