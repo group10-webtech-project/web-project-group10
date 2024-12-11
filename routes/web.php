@@ -12,6 +12,10 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
+
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     // Admin dashboard
