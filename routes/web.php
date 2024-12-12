@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnimalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SettingsController;
@@ -72,6 +73,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
     Route::post('/settings/username', [SettingsController::class, 'updateUsername']);
     Route::delete('/settings/delete-account', [SettingsController::class, 'deleteAccount']);
+
+    // room routes
+    Route::controller(RoomController::class)->group(function () {
+        Route::get('/rooms/create', 'create')->name('rooms.create');
+        Route::get('/rooms/{id}', 'join')->name('rooms.join');
+        Route::post('/rooms/{id}/start', 'start')->name('rooms.start');
+    });
 });
 
 

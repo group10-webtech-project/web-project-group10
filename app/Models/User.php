@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string email
  * @property string password
  * @property string role
+ * @property string room_id
  */
 class User extends Authenticatable
 {
@@ -32,6 +33,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'room_id',
     ];
 
     /**
@@ -57,5 +59,10 @@ class User extends Authenticatable
             'last_login' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_id', 'id');
     }
 }
