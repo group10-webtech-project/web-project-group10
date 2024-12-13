@@ -6,9 +6,9 @@ use App\Models\Animal;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Validator;
 
 class AnimalController extends Controller
 {
@@ -40,9 +40,10 @@ class AnimalController extends Controller
      */
     public function store(Request $request): RedirectResponse|JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'short_name' => 'string|max:255',
+            'short_name' => 'nullable|string|max:255',
+            'initial_hint' => 'nullable|string|max:255',
             'size' => 'required|string|max:50',
             'habitat' => 'required|string|max:100',
             'diet' => 'required|string|in:Herbivore,Carnivore,Omnivore',
@@ -52,16 +53,18 @@ class AnimalController extends Controller
             'has_fur' => 'required|boolean',
             'can_swim' => 'required|boolean',
             'can_fly' => 'required|boolean',
+            'is_carnivore' => 'required|boolean',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        if ($request->hasFile('image_url')) {
+            $imagePath = $request->file('image_url')->store('animals', 'public');
+            $validatedData['image_url'] = $imagePath;
         }
 
-        $animal = Animal::create($validator->validated());
+        $animal = Animal::create($validatedData);
 
         if (request()->wantsJson()) {
             return response()->json($animal, 201);
@@ -94,15 +97,16 @@ class AnimalController extends Controller
         return view('admin.animals.edit', compact('animal', 'categories'));
     }
 
-
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Animal $animal): RedirectResponse|JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+//        dd($request->all());
+        $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'short_name' => 'sometimes|required|string|max:255',
+            'short_name' => 'sometimes|nullable|string|max:255',
+            'initial_hint' => 'sometimes|nullable|string|max:255',
             'size' => 'sometimes|required|string|max:50',
             'habitat' => 'sometimes|required|string|max:100',
             'diet' => 'sometimes|required|string|in:Herbivore,Carnivore,Omnivore',
@@ -112,16 +116,23 @@ class AnimalController extends Controller
             'has_fur' => 'sometimes|required|boolean',
             'can_swim' => 'sometimes|required|boolean',
             'can_fly' => 'sometimes|required|boolean',
+            'is_carnivore' => 'sometimes|required|boolean',
             'category_id' => 'sometimes|required|exists:categories,id',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
+            'description' => 'sometimes|nullable|string',
+            'image_url' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        if ($request->hasFile('image_url')) {
+            // Delete old image if it exists
+            if ($animal->image_url) {
+                Storage::disk('public')->delete($animal->image_url);
+            }
+
+            $imagePath = $request->file('image_url')->store('animals', 'public');
+            $validatedData['image_url'] = $imagePath;
         }
 
-        $animal->update($validator->validated());
+        $animal->update($validatedData);
 
         if (request()->wantsJson()) {
             return response()->json($animal);
@@ -138,6 +149,11 @@ class AnimalController extends Controller
     {
         // Delete related game sessions
         $animal->gameSessions()->delete(); // Assuming you have a relationship defined
+
+        // Delete image if it exists
+        if ($animal->image_url) {
+            Storage::disk('public')->delete($animal->image_url);
+        }
 
         // Now delete the animal
         $animal->delete();
