@@ -13,25 +13,25 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $name
  * @property string $short_name
+ * @property string|null $initial_hint
  * @property string $size
  * @property string $habitat
  * @property string $diet
  * @property string $region
  * @property string $lifespan
- * @property string $has_legs
- * @property string $has_fur
- * @property string $can_swim
- * @property string $can_fly
+ * @property bool $has_legs
+ * @property bool $has_fur
+ * @property bool $can_swim
+ * @property bool $can_fly
+ * @property bool $is_carnivore
  * @property int $category_id
  * @property string|null $description
- * @property string|null $initial_hint
  * @property string|null $image_url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
 class Animal extends Model
 {
-
     /**
      * The table associated with the model.
      *
@@ -47,12 +47,14 @@ class Animal extends Model
     protected $primaryKey = 'id';
 
     /**
+     * The attributes that are mass assignable.
+     *
      * @var array
      */
-
     protected $fillable = [
         'name',
         'short_name',
+        'initial_hint',
         'size',
         'habitat',
         'diet',
@@ -65,78 +67,120 @@ class Animal extends Model
         'is_carnivore',
         'category_id',
         'description',
-        'initial_hint',
         'image_url',
     ];
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
      * @var array
      */
-    protected $hidden = [
-        //
+    protected $hidden = [];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+        'has_legs' => 'boolean',
+        'has_fur' => 'boolean',
+        'can_swim' => 'boolean',
+        'can_fly' => 'boolean',
+        'is_carnivore' => 'boolean',
+        'category_id' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    protected function casts(): array
+    public function getId(): int
     {
-        return [
-            'id' => 'integer',
-            'category_id' => 'integer',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
+        return $this->id;
     }
-
-    // Define the relationship with the Category model
+    /**
+     * Define the relationship with the Category model.
+     *
+     * @return BelongsTo
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Categories::class);
     }
+
+    /**
+     * Accessor for the description attribute.
+     *
+     * @return string
+     */
     public function getDescription(): string
     {
         return ucfirst($this->attributes['description']);
     }
 
+    /**
+     * Mutator for the description attribute.
+     *
+     * @param string $value
+     * @return void
+     */
     public function setDescription(string $value): void
     {
         $this->attributes['description'] = strtolower($value);
     }
 
+    /**
+     * Mutator for the diet attribute.
+     *
+     * @param string $value
+     * @return void
+     * @throws \InvalidArgumentException
+     */
     public function setDiet(string $value): void
     {
-        // TODO: update/expand on the diet types
         if (!in_array($value, ['Herbivore', 'Carnivore', 'Omnivore'])) {
             throw new \InvalidArgumentException('Invalid diet type.');
         }
         $this->attributes['diet'] = $value;
     }
 
-    public function getId(): int
-    {
-        return $this->attributes['id'];
-    }
-
-    public function getShortName(): string
-    {
-       return  strtoupper($this->attributes['short_name']);
-    }
-
+    /**
+     * Accessor for the name attribute.
+     *
+     * @return string
+     */
     public function getName(): string
     {
         return strtoupper($this->attributes['name']);
     }
 
+    /**
+     * Accessor for the short_name attribute.
+     *
+     * @return string
+     */
+    public function getShortName(): string
+    {
+        return strtoupper($this->attributes['short_name']);
+    }
+
+    /**
+     * Accessor for the initial_hint attribute.
+     *
+     * @return string
+     */
     public function getInitialHint(): string
     {
         return ucfirst($this->attributes['initial_hint']);
     }
-    public function getCharacteristic(string $value): string
-    {
-        return ucfirst($this->attributes[strtolower($value)]);
-    }
 
+    /**
+     * Relationship with game sessions (example provided in original code).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function gameSessions()
     {
         return $this->hasMany(GameSessions::class, 'animal_id');
     }
-
 }
