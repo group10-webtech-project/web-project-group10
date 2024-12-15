@@ -4,6 +4,7 @@ use App\Http\Controllers\AnimalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\MultiplayerGameController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SettingsController;
@@ -77,10 +78,24 @@ Route::middleware(['auth'])->group(function () {
     // room routes
     Route::controller(RoomController::class)->group(function () {
         Route::get('/rooms/create', 'create')->name('rooms.create');
-        Route::get('/rooms/{id}', 'join')->name('rooms.join');
+        Route::get('/rooms/{id}/join', 'join')->name('rooms.join');
+        Route::get('/rooms/{id}/finish', 'finish')->name('rooms.finish');
+        Route::get('/rooms/{id}/', 'index')->name('rooms.index');
         Route::post('/rooms/{id}/start', 'start')->name('rooms.start');
     });
-});
 
+    Route::controller(MultiplayerGameController::class)->group(function () {
+        Route::get('/rooms/{id}/newgame', 'newGame')->name('multiplayer.newGame');
+        Route::get('/rooms/{id}/game', 'index')->name('multiplayer.index');
+
+        // Rate-limited routes
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/rooms/{id}/game/guess', 'guess')->name('multiplayer.guess');
+            Route::post('/rooms/{id}/game/hint', 'buyHint')->name('multiplayer.hint');
+            Route::post('/rooms/{id}/game/check', 'checkCharacteristic')->name('multiplayer.checkCharacteristic');
+            Route::post('/rooms/{id}/game/reveal', 'revealAnswer')->name('multiplayer.reveal');
+        });
+    });
+});
 
 

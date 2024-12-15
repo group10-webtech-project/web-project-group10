@@ -23,7 +23,7 @@ class RoomController extends Controller
 
             $room = Room::create([
                 'room_code' => $roomCode,
-                'active' => true,
+                'active' => false,
                 'admin_id' => $user->id
             ]);
 
@@ -31,26 +31,80 @@ class RoomController extends Controller
             return redirect()->route('rooms.join', $room->id);
         }
         else {
-            return "You have to login to play create a room";
+            return "You have to login to create a room";
         }
     }
 
     public function join($id)
     {
-        PackageSent::dispatch(['data'=>'ads']);
+        if (Auth::check()) {
+            $room = Room::findOrFail($id);
+            if (!$room->active)
+            {
+                $user = Auth::user();
 
+                $user->room_id = $room->id;
+                $user->current_room_score = 0;
+                $user->finished_in_room = true;
+                $user->save();
+
+                UserJoined::dispatch($user);
+                return redirect()->route('rooms.index', $id);
+            }
+            else {
+                return "The game has already started in this room, try later.";
+            }
+        }
+        else {
+            return "You have to login to play multiplayer";
+        }
+    }
+
+    public function finish($id) {
         if (Auth::check()) {
             $room = Room::findOrFail($id);
             $user = Auth::user();
+            if ($user->fnished_in_room)
+            {
+                return "Already finished playing!";
+            }
 
-            $user->room_id = $room->id;
-            $user->save();
+            if ($room->id == $user->room_id)
+            {
+                $user->finished_in_room = true;
+                $user->save();
+                if($room-> active && !$room->users()->where('finished_in_room', false)->exists())
+                {
+                    $room->active = false;
+                    $room->save();
+                }
 
-            UserJoined::dispatch($user);
-            return view('room', [
-                'room' => $room,
-                'player' => $user,
-            ]);
+                UserJoined::dispatch($user);
+                return redirect()->route('rooms.index', $id);
+            }
+            else {
+                return "Room error.";
+            }
+        }
+        else {
+            return "You have to login to play multiplayer";
+        }
+    }
+
+    public function index($id) {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $room = Room::findOrFail($id);
+            if($user->room_id == $room->id) {
+                return view('room', [
+                    'room' => $room,
+                    'users' => $room->users->where('finished_in_room', true)->sortByDesc('current_room_score'),
+                    'user' => $user,
+                ]);
+            }
+            else {
+                return "You are not part of this room.";
+            }
         }
         else {
             return "You have to login to play multiplayer";
@@ -63,12 +117,27 @@ class RoomController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             if($user->id == $room->admin_id) {
-                GameStart::dispatch($room);
+                if(!$room->active)
+                {
+                    $room = Room::findOrFail($id);
+                    $room->assignRandomAnimals(3);
+                    $room->active = true;
+                    $room->users()->update(['current_room_score' => 0]);
+                    $room->users()->update(['finished_in_room' => false]);
+                    $room->save();
+                    GameStart::dispatch($room);
 
-                return response()->json([
-                    'message' => 'Game has started.',
-                    'status' => 'success',
-                ]);
+                    return response()->json([
+                        'message' => 'Game has started.',
+                        'status' => 'success',
+                    ]);
+                }
+                else {
+                    return response()->json([
+                        'message' => "The game is already started.",
+                        'status' => 'error',
+                    ]);
+                }
             }
             else {
                 return response()->json([
@@ -84,4 +153,6 @@ class RoomController extends Controller
             ]);
         }
     }
+
+
 }

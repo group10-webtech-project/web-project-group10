@@ -13,14 +13,9 @@
                     <div class="badge badge-primary badge-lg text-lg sm:text-2xl p-4">
                         ✨ Points: {{ session('points', 500) }}
                     </div>
-                    <form action="{{ route('game.new') }}" method="POST" onsubmit="localStorage.removeItem('hints')">
-                        @csrf
-                        <button type="submit" class="btn btn-success gap-2 hover:scale-105 transition-transform duration-200">
-                            <span class="hidden sm:inline">New Game</span>
-                            <span class="sm:hidden">New</span>
-                            🎲
-                        </button>
-                    </form>
+                </div>
+                <div>
+                    Timer
                 </div>
             </div>
 
@@ -58,7 +53,7 @@
 
             <!-- Current Input Row -->
             @if(!$gameOver && count($guesses) < 5)
-                <form action="{{ route('game.guess') }}" method="POST" class="mb-2">
+                <form action="{{ route('multiplayer.guess', $room->id) }}" method="POST" class="mb-2">
                     @csrf
                     <div class="flex justify-center gap-1 sm:gap-2 bg-base-200 rounded-lg p-2">
                         @for($i = 0; $i < $wordLength; $i++)
@@ -111,7 +106,7 @@
                     🏪 Hint Store
                 </h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
-                    <form action="{{ route('game.hint') }}" method="POST" class="contents" id="hintForm">
+                    <form action="{{ route('multiplayer.hint', $room->id) }}" method="POST" class="contents" id="hintForm">
                         @csrf
                         <button type="button"
                                 onclick="buyHint()"
@@ -181,36 +176,9 @@
             localStorage.removeItem('hints');
         </script>
         <div class="fixed inset-0 bg-black/50 z-40" id="game-over-overlay"></div>
-        <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4">
-            @if($won)
-                <div class="alert alert-success shadow-lg" id="win-message">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="text-xl sm:text-2xl">Congratulations! You won!</span>
-                </div>
-            @else
-                <div class="alert alert-error shadow-lg" id="lose-message">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="text-xl sm:text-2xl">
-                        Game Over! The animal was: {{ session('animal') }}
-                    </span>
-                </div>
-            @endif
-
-            <form action="{{ route('game.new') }}" method="POST" class="mt-4 text-center">
-                @csrf
-                <button type="submit" class="btn btn-primary btn-lg gap-2">
-                    🎲 Play Again
-                </button>
-            </form>
-        </div>
-    @endif
+   @endif
 </div>
 
-@vite(['resources/js/game.js'])
 @endsection
 
 <script>
@@ -227,7 +195,7 @@ function submitGuess() {
     const form = document.querySelector('form[action*="guess"]');
     const formData = new FormData(form);
 
-    fetch('{{ route('game.guess') }}', {
+    fetch('{{ route('multiplayer.guess', $room->id) }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -238,7 +206,8 @@ function submitGuess() {
     .then(data => {
         if (data.success) {
             // Clear hints if game is over
-            if (data.gameOver) {
+            console.log(data);
+            if (data.roundOver) {
                 localStorage.removeItem('hints');
             }
             // Animate each letter before reloading
@@ -249,7 +218,12 @@ function submitGuess() {
 
             // Reload after all animations complete
             setTimeout(() => {
-                location.reload();
+                if(data.gameOver) {
+                    window.location.href = "{{ route('rooms.finish', ['id' => $room->id]) }}";
+                }
+                else {
+                    location.reload();
+                }
             }, (inputs.length * 0.2 + 0.5) * 1000);
         } else {
             alert(data.message || 'An error occurred');
@@ -283,7 +257,7 @@ function allInputsFilled() {
 function buyHint() {
     const form = document.getElementById('hintForm');
 
-    fetch('{{ route('game.hint') }}', {
+    fetch('{{ route('multiplayer.hint', $room->id) }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -334,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkCharacteristic(characteristic) {
-    fetch('{{ route('game.checkCharacteristic') }}', {
+    fetch('{{ route('multiplayer.checkCharacteristic', $room->id) }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

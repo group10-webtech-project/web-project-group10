@@ -17,6 +17,8 @@ use Illuminate\Notifications\Notifiable;
  * @property string password
  * @property string role
  * @property string room_id
+ * @property int current_room_score
+ * @property bool finished_in_room
  */
 class User extends Authenticatable
 {
@@ -34,6 +36,8 @@ class User extends Authenticatable
         'email',
         'password',
         'room_id',
+        'current_room_score',
+        'finished_in_room'
     ];
 
     /**

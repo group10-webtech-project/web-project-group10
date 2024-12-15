@@ -15,4 +15,15 @@ class Room extends Model
     {
         return $this->hasMany(User::class, 'room_id', 'id');
     }
+
+    public function animals()
+    {
+        return $this->belongsToMany(Animal::class, 'room_animal');
+    }
+
+    public function assignRandomAnimals($count)
+    {
+        $randomAnimals = Animal::inRandomOrder()->take($count)->pluck('id');
+        $this->animals()->sync($randomAnimals);
+    }
 }
