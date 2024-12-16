@@ -6,11 +6,21 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TwoFactorAuthController;
 
 // Public routes
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
+
+// Two factor enabled routes
+Route::middleware(['auth','twofactor'])->prefix('twofactor')->group(function (){
+    Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    Route::post('/settings/username', [SettingsController::class, 'updateUsername']);
+    Route::delete('/settings/delete-account', [SettingsController::class, 'deleteAccount']);
+});
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
@@ -66,13 +76,13 @@ Route::middleware('guest')->group(function () {
     })->middleware('guest')->name('password.email');
 });
 
+// Authenticated User Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
+    // Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
-    Route::post('/settings/username', [SettingsController::class, 'updateUsername']);
-    Route::delete('/settings/delete-account', [SettingsController::class, 'deleteAccount']);
+    // Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    // Route::post('/settings/username', [SettingsController::class, 'updateUsername']);
+    // Route::delete('/settings/delete-account', [SettingsController::class, 'deleteAccount']);
+    Route::get('/verify/resend', [TwoFactorAuthController::class, 'resend'])->name('verify.resend');
+    Route::resource('/verify', TwoFactorAuthController::class)->only(['index', 'store']);
 });
-
-
-

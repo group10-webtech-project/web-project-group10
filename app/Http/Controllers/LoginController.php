@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\TwoFactorCode;
 
 class LoginController extends Controller
 {
@@ -25,8 +26,12 @@ class LoginController extends Controller
             if (Auth::check() && Auth::user()->role === 'admin') {
                 return redirect()->intended('/admin');
             }
+            
+            $user = Auth::user();
+            $user -> generateTwoFactorAuthCode();
+            $user -> notify(new TwoFactorCode());
 
-            return redirect()->intended(route('game.index'));
+            return redirect()->intended(route('verify.index'));
         }
 
         return back()->withErrors([
