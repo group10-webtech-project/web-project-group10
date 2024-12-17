@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.main-height {
+    height: 100lvh;
+}
+
 .game-container {
     background: linear-gradient(135deg, hsl(var(--b2)), hsl(var(--b3)));
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
@@ -19,9 +23,24 @@
 }
 }
 
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 .fade-in-item {
     opacity: 0;
     animation: fade-in 1s forwards;
+
+}
+
+.fade-out-item {
+    opacity: 1;
+    animation: fade-out 2s forwards;
 
 }
 

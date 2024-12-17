@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Room;
 use App\Models\Animal;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class MultiplayerGameController extends Controller
 {
@@ -54,6 +55,7 @@ class MultiplayerGameController extends Controller
 
             return view('multiplayer_game', [
                 'room' => $room,
+                'remainingSeconds' => Carbon::now()->diffInSeconds($room->game_end_at),
                 'playerName' => $playerName,
                 'wordLength' => strlen(session('animal')),
                 'guesses' => session('guesses', []),
@@ -73,6 +75,13 @@ class MultiplayerGameController extends Controller
     public function guess(Request $request, $id)
     {
         $room = Room::findOrFail($id);
+        if(!$room->active)
+        {
+            return response()->json([
+                'success' => false,
+                'error' => "The game is currently not running."
+            ]);
+        }
         $request->validate([
             'guess' => 'required|string|alpha|max:10'
         ]);

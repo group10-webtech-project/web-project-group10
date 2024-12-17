@@ -9,7 +9,7 @@ class Room extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['room_code', 'active', 'admin_id'];
+    protected $fillable = ['room_code', 'active', 'admin_id', 'game_end_at'];
 
     public function users()
     {

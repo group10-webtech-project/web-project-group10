@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('admin_id')->constrained('users');
             $table->string('room_code')->unique();
             $table->boolean('active')->default(false);
+            $table->timestamp('game_end_at')->nullable();
             $table->timestamps();
         });
     }

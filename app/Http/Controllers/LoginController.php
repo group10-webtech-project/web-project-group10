@@ -26,7 +26,7 @@ class LoginController extends Controller
                 return redirect()->intended('/admin');
             }
 
-            return redirect()->intended(route('game.index'));
+            return redirect()->intended(route('menu'));
         }
 
         return back()->withErrors([

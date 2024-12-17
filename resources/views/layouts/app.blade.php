@@ -62,7 +62,7 @@
                 @else
                     <a href="{{ route('login') }}" class="btn btn-ghost">Login</a>
                 @endauth
-                <a href="{{ route('game.index') }}" class="btn btn-primary">Play Now</a>
+                <a href="{{ route('menu') }}" class="btn btn-primary">Play Now</a>
             </div>
         </div>
     </div>

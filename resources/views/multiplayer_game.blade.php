@@ -14,7 +14,7 @@
                         ✨ Points: {{ session('points', 500) }}
                     </div>
                 </div>
-                <div>
+                <div id="timer">
                     Timer
                 </div>
             </div>
@@ -182,6 +182,24 @@
 @endsection
 
 <script>
+    const room = @json($room);
+    let remaining_seconds = @json($remainingSeconds);
+    let timer = null;
+    console.log(timer);
+    const interval = setInterval(() => {
+        const minutes = Math.floor(remaining_seconds / 60);
+        const seconds = Math.floor(remaining_seconds % 60);
+
+        timer.innerHTML = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        remaining_seconds--;
+
+        if (remaining_seconds < 0) {
+            clearInterval(interval);
+            timer.innerHTML = "Game ended";
+        }
+    }, 1000);
+
+
 function submitGuess() {
     if (!allInputsFilled()) {
         alert('Please fill in all letters');
@@ -297,6 +315,11 @@ function buyHint() {
 
 // Add this to restore hints after page reload
 document.addEventListener('DOMContentLoaded', function() {
+    timer = document.getElementById("timer");
+    window.Echo.private(`rooms.${room.id}`)
+        .listen('GameEnded', (room) => {
+            window.location.href = "{{ route('rooms.finish', ['id' => $room->id]) }}";
+        });
     const hints = JSON.parse(localStorage.getItem('hints') || '{}');
     Object.entries(hints).forEach(([position, letter]) => {
         const input = document.querySelector(`[data-position="${position}"]`);

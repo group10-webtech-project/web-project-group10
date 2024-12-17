@@ -68,6 +68,10 @@ Route::middleware('guest')->group(function () {
     })->middleware('guest')->name('password.email');
 });
 
+Route::get('/menu', function() {
+    return view('choose-mode');
+})->name('menu');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -75,6 +79,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/username', [SettingsController::class, 'updateUsername']);
     Route::delete('/settings/delete-account', [SettingsController::class, 'deleteAccount']);
 
+    Route::get('/multiplayer-menu', function() {
+        return view('multiplayer-menu');
+    })->name('multiplayer.menu');
     // room routes
     Route::controller(RoomController::class)->group(function () {
         Route::get('/rooms/create', 'create')->name('rooms.create');
@@ -82,6 +89,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rooms/{id}/finish', 'finish')->name('rooms.finish');
         Route::get('/rooms/{id}/', 'index')->name('rooms.index');
         Route::post('/rooms/{id}/start', 'start')->name('rooms.start');
+        Route::post('/rooms/join', 'joinWithCode')->name('rooms.joinWithCode');
     });
 
     Route::controller(MultiplayerGameController::class)->group(function () {

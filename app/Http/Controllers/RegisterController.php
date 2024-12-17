@@ -34,7 +34,7 @@ class RegisterController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Registration successful!',
-            'redirect' => route('game.index')
+            'redirect' => route('menu')
         ]);
     }
 }

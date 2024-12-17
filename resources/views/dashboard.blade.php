@@ -72,7 +72,7 @@
             </div>
 
             <div class="card-actions justify-end mt-6">
-                <a href="{{ route('game.index') }}" class="btn btn-primary">
+                <a href="{{ route('menu') }}" class="btn btn-primary">
                     Play New Game
                 </a>
             </div>
