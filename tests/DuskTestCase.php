@@ -26,7 +26,8 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function driver(): RemoteWebDriver
     {
-        $options = (new ChromeOptions)->addArguments([
+        $options = (new ChromeOptions());
+        $options->addArguments([
             '--no-sandbox',
             '--disable-gpu',
             '--window-size=1920,1080',
@@ -36,12 +37,25 @@ abstract class DuskTestCase extends BaseTestCase
             '--ignore-certificate-errors',
         ]);
 
+        // Add this to help with debugging
+        if (!env('DUSK_HEADLESS', false)) {
+            $options->addArguments(['--window-size=1920,1080']);
+        }
+
         return RemoteWebDriver::create(
-            'http://selenium:4444/wd/hub',
+            env('DUSK_DRIVER_URL', 'http://selenium:4444/wd/hub'),
             DesiredCapabilities::chrome()->setCapability(
                 ChromeOptions::CAPABILITY,
                 $options
             )
         );
+    }
+
+    /**
+     * Get the application's base URL.
+     */
+    protected function baseUrl()
+    {
+        return 'http://laravel.test';
     }
 }

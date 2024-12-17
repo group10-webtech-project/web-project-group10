@@ -20,7 +20,9 @@ services:
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+          sail:
+                aliases:
+                    - laravel.test
         depends_on:
             - mysql
             - redis
@@ -93,13 +95,18 @@ services:
         networks:
             - sail
     selenium:
-        image: selenium/standalone-chromium
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
+        image: 'seleniarm/standalone-chromium'
         volumes:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+        environment:
+            - SE_NODE_SESSION_TIMEOUT=86400
+            - SE_NODE_MAX_SESSIONS=8
+            - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+        ports:
+            - '4444:4444'
+            - '7900:7900'
 networks:
     sail:
         driver: bridge

@@ -97,3 +97,103 @@ For more info read:
 # ER Diagram
 
 ![Er Diagram](./database/er_diagram.webp)
+
+# Testing
+
+## Prerequisites
+- Make sure you're running Laravel Sail with Docker
+- If you're using Apple Silicon (M1/M2) Mac, the Selenium container needs to be configured specifically for ARM64 architecture
+
+## Environment Setup
+1. Copy the Dusk environment file:
+```shell
+cp .env.example .env.dusk.local
+```
+
+2. Configure your `.env.dusk.local`:
+```env
+APP_URL=http://laravel.test
+DUSK_DRIVER_URL=http://selenium:4444/wd/hub
+DUSK_HEADLESS=false  # Set to true for headless testing
+```
+
+## Running Tests
+
+### All Tests
+```shell
+# Run all tests (Unit, Feature, and Browser)
+sail test
+
+# Run only Browser/Dusk tests
+sail dusk
+```
+
+### Specific Test Suites
+```shell
+# Run only Unit tests
+sail test --testsuite=Unit
+
+# Run only Feature tests
+sail test --testsuite=Feature
+
+# Run only Browser/Dusk tests
+sail test --testsuite=Browser/Dusk
+```
+
+### Single Test File
+```shell
+# Run a specific test file
+sail dusk tests/Browser/ExampleTest.php
+```
+
+### Single Test Method
+```shell
+# Run a specific test method
+sail dusk tests/Browser/ExampleTest.php --filter=testBasicExample
+```
+
+## Troubleshooting
+
+### Architecture-Specific Issues
+If you're using Apple Silicon (M1/M2) Mac, ensure your `docker-compose.yml` uses the ARM64-compatible Selenium image:
+```yaml
+selenium:
+    image: 'seleniarm/standalone-chromium'
+    volumes:
+        - '/dev/shm:/dev/shm'
+```
+
+### Common Issues
+
+1. **Connection Refused Error**
+   - Ensure all containers are running: `sail ps`
+   - Check Selenium status: `curl http://localhost:4444/wd/hub/status`
+   - Verify Laravel is accessible: `curl http://laravel.test`
+
+2. **Browser Not Visible**
+   - Set `DUSK_HEADLESS=false` in `.env.dusk.local`
+   - You can view the browser via VNC at `localhost:7900` (password: "secret")
+
+3. **Test Environment Reset**
+```shell
+# Clear caches
+sail artisan config:clear
+sail artisan cache:clear
+sail artisan route:clear
+
+# Rebuild containers
+sail down
+sail build --no-cache
+sail up -d
+```
+
+## Visual Debugging
+For visual debugging of browser tests:
+1. Set `DUSK_HEADLESS=false` in `.env.dusk.local`
+2. Connect to VNC viewer at `localhost:7900` (password: "secret")
+3. Run your tests to see the browser automation in real-time
+
+## Screenshots and Console Logs
+Dusk automatically takes screenshots of failures and console logs. Find them in:
+- Screenshots: `tests/Browser/screenshots`
+- Console Logs: `tests/Browser/console`
