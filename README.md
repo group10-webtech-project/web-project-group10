@@ -98,7 +98,9 @@ For more info read:
 
 ![Er Diagram](./database/er_diagram.webp)
 
-# Testing
+---- 
+
+# Individual Extension Testing
 
 ## Prerequisites
 - Make sure you're running Laravel Sail with Docker
