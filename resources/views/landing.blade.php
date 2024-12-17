@@ -24,6 +24,10 @@
                         <span class="hidden sm:inline">Play as Guest</span>
                         <span class="sm:hidden">Play 🎲</span>
                     </a>
+                    <a href="{{ route('faq') }}" class="btn btn-ghost join-item hover:scale-105 transition-transform">
+                        <span class="hidden sm:inline">FAQ</span>
+                        <span class="sm:hidden">❓</span>
+                    </a>
                 </div>
             </div>
         </div>
