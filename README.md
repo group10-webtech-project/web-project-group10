@@ -165,6 +165,14 @@ selenium:
         - '/dev/shm:/dev/shm'
 ```
 
+Else for windows or linux
+```yaml
+selenium:
+    image: 'selenium/standalone-chrome'
+    volumes:
+        - '/dev/shm:/dev/shm'
+```
+
 ### Common Issues
 
 1. **Connection Refused Error**
