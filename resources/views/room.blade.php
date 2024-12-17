@@ -59,7 +59,7 @@
     <div class="fixed inset-0 bg-black/50 z-40" style="display: none" id="win-message">
         <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-xl px-4">
             <div class="bg-green-400 rounded-md shadow-lg h-20">
-                <span class="max-h-20 w-full absolute text-center text-xl sm:text-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">Congratulations!<br>{{ $users[0]->name }} won!</span>
+                <span class="max-h-20 w-full absolute text-center text-xl sm:text-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">Congratulations!<br>{{ $users[0]->name  }} won!</span>
             </div>
         </div>
     </div>

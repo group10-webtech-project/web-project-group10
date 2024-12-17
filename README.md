@@ -78,6 +78,30 @@ sail up -d
 npm run dev
 ```
 
+## Setting up multiplayer
+Install boradcasting with Reverb.
+```shell
+php artisan install:broadcasting
+```
+
+### Playing multiplayer on local network
+Change the .env values REVERB_HOST and APP_URL to use your host machine's ip address.
+
+### Playing multiplayer on external networks
+Change the .env values REVERB_HOST and APP_URL to use your router's ip address or domain name. You are going to have to port forward the REVERB_PORT and APP_PORT in your router's configuration.
+
+To aupdate the new .env values in the front-end:
+```shell
+npm run build
+```
+
+## Running multiplayer
+```shell
+./multiplayer_run_app.sh 
+```
+
+
+
 # Executing Commands
 
 When using Laravel Sail, your application is executing within a Docker container and is isolated from your local computer. However, Sail provides a convenient way to run various commands against your application such as arbitrary PHP commands, Artisan commands, Composer commands, and Node / NPM commands.
