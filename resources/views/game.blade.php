@@ -210,7 +210,6 @@
     @endif
 </div>
 
-@vite(['resources/js/game.js'])
 @endsection
 
 <script>
